@@ -716,17 +716,22 @@
         // CONFIGURACIÓN DE ARCHIVOS: solo cambia los nombres aquí.
         // Estructura de carpetas: assets/images/ y assets/audio/
         // ================================================================
-        const ASSET_CONFIG = {
-            imagesFolder: "assets/images/",
-            audioFolder: "assets/audio/",
-            cylinderImage: "Cilindro-1.png",
-            speakerImage: "Botón-play-audio.png",
-            backgroundImage: "", // Opcional: por ejemplo "Referencia.jpg". Vacío = fondo vectorial.
-            audioFiles: [
-                "DO_1.mp3", "MI.mp3", "SOL.mp3", "DO (MÁS ALTO).mp3",
-                "FA.mp3", "LA.mp3", "Navidad SI.mp3", "RE.mp3"
-            ]
-        };
+const ASSET_CONFIG = {
+    cylinderImage: "Cilindro-1.png",
+    speakerImage: "Botón-play-audio.png",
+    backgroundImage: "",
+
+    audioFiles: [
+        "Audio-1.wav",
+        "Audio-2.wav",
+        "Audio-3.wav",
+        "Audio-4.wav",
+        "Audio-5.wav",
+        "Audio-6.wav",
+        "Audio-7.wav",
+        "Audio-8.wav"
+    ]
+};
 
         // Imagen compartida si Cilindro-1.png está disponible en la misma carpeta o es cargada por el usuario
         let sharedCylinderImgUrl = null;
