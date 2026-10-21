@@ -208,26 +208,12 @@
             animation: pulseSpeakerImg 0.65s ease-in-out infinite;
         }
 
-        /* Drag & Drop Overlay */
-        #dropzone-overlay {
-            background: rgba(28, 11, 68, 0.88);
-            backdrop-filter: blur(10px);
-        }
     </style>
 </head>
 <body>
 
     <!-- LIENZO PRINCIPAL EXACTO DE 1980 x 1920 PÍXELES -->
     <div id="stage-wrapper" role="application" aria-label="Juego interactivo El tintineo de Da-Gas 1980x1920">
-
-        <!-- OVERLAY AL ARRASTRAR ARCHIVOS SOBRE EL LIENZO -->
-        <div id="dropzone-overlay" class="hidden absolute inset-0 z-[100] border-8 border-dashed border-amber-400 rounded-3xl m-6 flex flex-col items-center justify-center text-white pointer-events-none">
-            <div class="text-8xl mb-6">📂✨</div>
-            <h2 class="text-6xl font-extrabold text-amber-300 mb-4">Suelta tus archivos aquí</h2>
-            <p class="text-3xl text-purple-200 max-w-3xl text-center">
-                Puedes soltar juntos <code class="text-white font-bold">Cilindro-1.png</code>, <code class="text-white font-bold">Botón-play-audio.png</code>, <code class="text-white font-bold">Referencia.jpg</code> y los <code class="text-white font-bold">8 archivos de audio</code>. Se asignarán automáticamente.
-            </p>
-        </div>
 
         <!-- 1. CAPA DE FONDO VECTORIAL FIEL A LA REFERENCIA -->
         <svg id="vector-background" viewBox="0 0 1980 1920" width="1980" height="1920" class="absolute inset-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
@@ -467,17 +453,13 @@
                 </div>
                 <button onclick="playQuizTargetSound()" class="px-5 py-2 rounded-full bg-yellow-400 hover:bg-yellow-300 text-purple-950 font-bold text-lg shadow transition">
                     🔊 Repetir Sonido (4s)
-            <!-- Botones de Vista (Ajustar vs 1980x1920 1:1) y Carga Rápida de Archivos -->
+                </button>
+            </div>
+
+            <!-- Botones de Vista (Ajustar vs 1980x1920 1:1) -->
             <div class="hud-glass rounded-full p-2 flex items-center gap-2 shadow-2xl">
-                <label class="px-5 py-3 rounded-full text-lg font-extrabold bg-emerald-400 hover:bg-emerald-300 text-purple-950 transition shadow cursor-pointer flex items-center gap-2" title="Selecciona todos tus archivos juntos (Cilindro-1.png, Botón-play-audio.png y los 8 audios)">
-                    📂 Cargar Archivos (Lote)
-                    <input type="file" id="batch-files-input" multiple accept="image/*,audio/*" class="hidden" onchange="handleBatchFilesUpload(event)">
-                </label>
                 <button id="btn-scale-toggle" onclick="toggleScaleMode()" class="px-5 py-3 rounded-full text-lg font-semibold text-white hover:bg-white/15 transition" title="Alternar entre Ajuste Automático y Tamaño Real 1980x1920px">
                     📐 Vista: Ajustada
-                </button>
-                <button onclick="toggleConfigModal(true)" class="px-5 py-3 rounded-full text-lg font-semibold bg-amber-400 hover:bg-amber-300 text-purple-950 transition shadow">
-                    ⚙️ Configurar (8)
                 </button>
                 <button onclick="toggleHudVisibility()" class="px-4 py-3 rounded-full text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 transition" title="Modo Kiosco Limpio (Ocultar barra)">
                     👁️
@@ -663,7 +645,6 @@
 
             <!-- Imagen oficial Botón-play-audio.png (se muestra automáticamente si carga desde la carpeta o por lote) -->
             <img id="custom-speaker-img" 
-                 src="Botón-play-audio.png" 
                  alt="Botón Play Audio Da-Gas"
                  class="hidden w-[184px] h-[288px] object-contain transition-transform duration-300 group-hover:scale-105 select-none pointer-events-none"
                  onload="handleSpeakerImgLoaded()"
@@ -716,118 +697,6 @@
         <!-- 7. CANVAS DE PARTÍCULAS Y DESTELLOS DORADOS -->
         <canvas id="particles-canvas" width="1980" height="1920"></canvas>
 
-        <!-- 8. MODAL DE CONFIGURACIÓN PARA SUBIR EN LOTE O INDIVIDUALMENTE LOS ARCHIVOS -->
-        <div id="config-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-10">
-            <div class="bg-[#23124b] border-2 border-purple-400/40 rounded-3xl max-w-6xl w-full max-h-[1680px] overflow-y-auto p-10 text-white shadow-2xl">
-                <div class="flex items-center justify-between border-b border-purple-400/30 pb-6 mb-6">
-                    <div>
-                        <h2 class="text-4xl font-bold text-amber-300">⚙️ Gestor de Archivos de "El tintineo de Da-Gas" (1980×1920 px)</h2>
-                        <p class="text-purple-200 text-xl mt-1">
-                            Compatible con tus archivos <code class="text-amber-300">Cilindro-1.png</code>, <code class="text-amber-300">Botón-play-audio.png</code>, <code class="text-amber-300">Referencia.jpg</code> y tus <strong>8 audios de 4 segundos</strong>.
-                        </p>
-                    </div>
-                    <button onclick="toggleConfigModal(false)" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-3xl flex items-center justify-center">
-                        ✕
-                    </button>
-                </div>
-
-                <!-- CARGA EN LOTE DE TODOS LOS ARCHIVOS JUNTOS -->
-                <div class="bg-gradient-to-r from-emerald-900/50 to-purple-900/60 border-2 border-emerald-400/50 rounded-2xl p-6 mb-6 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h3 class="text-2xl font-extrabold text-emerald-300 flex items-center gap-2">
-                            ⚡ Carga Rápida Inteligente (Selecciona todos tus archivos a la vez)
-                        </h3>
-                        <p class="text-purple-100 text-lg mt-1">
-                            Selecciona o arrastra tus 8 audios (<code class="text-amber-200">.wav / .mp3</code>) junto con <code class="text-amber-200">Cilindro-1.png</code> y <code class="text-amber-200">Botón-play-audio.png</code>. El sistema los reconoce y asigna automáticamente.
-                        </p>
-                    </div>
-                    <label class="px-8 py-4 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-purple-950 font-extrabold text-xl cursor-pointer transition shadow-xl shrink-0">
-                        📂 Seleccionar Todos los Archivos...
-                        <input type="file" multiple accept="image/*,audio/*" class="hidden" onchange="handleBatchFilesUpload(event)">
-                    </label>
-                </div>
-
-                <!-- Sección 1: Imágenes Principales (Cilindro-1.png, Botón-play-audio.png y Fondo) -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <!-- Cilindro-1.png para los 8 adornos -->
-                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xl font-bold text-amber-300 mb-1">1. Imagen de los 8 Cilindros</h4>
-                            <p class="text-purple-200 text-sm mb-3">Archivo esperado: <code class="text-white">Cilindro-1.png</code> (se aplica a los 8 cilindros de la cuadrícula).</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <label class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-bold text-base cursor-pointer transition">
-                                🖼️ Subir Cilindro-1.png
-                                <input type="file" accept="image/*" class="hidden" onchange="handleSharedCylinderImageUpload(event)">
-                            </label>
-                            <span id="status-cilindro-img" class="text-xs text-purple-300">Auto / Vector HD</span>
-                        </div>
-                    </div>
-
-                    <!-- Botón-play-audio.png -->
-                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xl font-bold text-amber-300 mb-1">2. Botón Play Audio Inferior</h4>
-                            <p class="text-purple-200 text-sm mb-3">Archivo esperado: <code class="text-white">Botón-play-audio.png</code> (cilindro blanco con ondas moradas).</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <label class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-bold text-base cursor-pointer transition">
-                                🖼️ Subir Botón-play-audio.png
-                                <input type="file" accept="image/*" class="hidden" onchange="handleSpeakerImageUpload(event)">
-                            </label>
-                            <span id="status-speaker-img" class="text-xs text-purple-300">Auto / Ecualizador HD</span>
-                        </div>
-                    </div>
-
-                    <!-- Imagen de Fondo Referencia.jpg -->
-                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
-                        <div>
-                            <h4 class="text-xl font-bold text-amber-300 mb-1">3. Fondo 1980×1920 px</h4>
-                            <p class="text-purple-200 text-sm mb-3">Usa el fondo vectorial limpio o sube <code class="text-white">Referencia.jpg</code> directamente.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <label class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-base cursor-pointer transition">
-                                🖼️ Subir Fondo
-                                <input type="file" accept="image/*" class="hidden" onchange="handleBackgroundUpload(event)">
-                            </label>
-                            <button onclick="resetCustomBackground()" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold">
-                                Restaurar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sección 2: Los 8 Cilindros y sus 8 Sonidos de 4 segundos -->
-                <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 class="text-2xl font-bold flex items-center gap-2">
-                                <span>🔔</span> Los 8 Sonidos de 4.0 Segundos (Uno por cada Cilindro Dorado)
-                            </h3>
-                            <p class="text-purple-200 text-base">
-                                Preconfigurados con los 8 tonos de campana de 4 segundos que compartiste (Do5 a Do6) y listos para cargar tus archivos <code class="text-amber-300">.wav / .mp3</code>.
-                            </p>
-                        </div>
-                        <button onclick="resetAllCustomAssets()" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-200 text-base font-semibold transition">
-                            Restablecer valores por defecto
-                        </button>
-                    </div>
-
-                    <div id="config-slots-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Generado dinámicamente por JS para los 8 cilindros -->
-                    </div>
-                </div>
-
-                <div class="mt-8 flex justify-end">
-                    <button onclick="toggleConfigModal(false)" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-300 text-purple-950 font-extrabold text-2xl shadow-lg hover:brightness-105 transition">
-                        ¡Listo, Volver al Juego!
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
     <script>
         /*************************************************************************
          * CONFIGURACIÓN DE LOS 8 CILINDROS (`Cilindro-1.png`) Y LOS 8 SONIDOS DE 4 SEGUNDOS
@@ -843,6 +712,22 @@
          *************************************************************************/
         const SOUND_DURATION = 4.0; // Exactamente 4.0 segundos cada sonido
 
+        // ================================================================
+        // CONFIGURACIÓN DE ARCHIVOS: solo cambia los nombres aquí.
+        // Estructura de carpetas: assets/images/ y assets/audio/
+        // ================================================================
+        const ASSET_CONFIG = {
+            imagesFolder: "assets/images/",
+            audioFolder: "assets/audio/",
+            cylinderImage: "Cilindro-1.png",
+            speakerImage: "Botón-play-audio.png",
+            backgroundImage: "", // Opcional: por ejemplo "Referencia.jpg". Vacío = fondo vectorial.
+            audioFiles: [
+                "DO_1.mp3", "MI.mp3", "SOL.mp3", "DO (MÁS ALTO).mp3",
+                "FA.mp3", "LA.mp3", "Navidad SI.mp3", "RE.mp3"
+            ]
+        };
+
         // Imagen compartida si Cilindro-1.png está disponible en la misma carpeta o es cargada por el usuario
         let sharedCylinderImgUrl = null;
         let sharedCylinderImgLoaded = false;
@@ -855,7 +740,7 @@
                 row: 1,
                 x: 722,
                 y: 282,
-                defaultAudioFiles: ["Audio-1.wav", "Audio-1.mp3", "Sonido-1.wav", "Sonido-1.mp3", "1.wav", "1.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[0]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -867,7 +752,7 @@
                 row: 1,
                 x: 1258,
                 y: 282,
-                defaultAudioFiles: ["Audio-2.wav", "Audio-2.mp3", "Sonido-2.wav", "Sonido-2.mp3", "2.wav", "2.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[1]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -881,7 +766,7 @@
                 row: 2,
                 x: 500,
                 y: 678,
-                defaultAudioFiles: ["Audio-3.wav", "Audio-3.mp3", "Sonido-3.wav", "Sonido-3.mp3", "3.wav", "3.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[2]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -893,7 +778,7 @@
                 row: 2,
                 x: 990,
                 y: 678,
-                defaultAudioFiles: ["Audio-4.wav", "Audio-4.mp3", "Sonido-4.wav", "Sonido-4.mp3", "4.wav", "4.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[3]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -905,7 +790,7 @@
                 row: 2,
                 x: 1480,
                 y: 678,
-                defaultAudioFiles: ["Audio-5.wav", "Audio-5.mp3", "Sonido-5.wav", "Sonido-5.mp3", "5.wav", "5.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[4]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -919,7 +804,7 @@
                 row: 3,
                 x: 500,
                 y: 1078,
-                defaultAudioFiles: ["Audio-6.wav", "Audio-6.mp3", "Sonido-6.wav", "Sonido-6.mp3", "6.wav", "6.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[5]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -931,7 +816,7 @@
                 row: 3,
                 x: 990,
                 y: 1078,
-                defaultAudioFiles: ["Audio-7.wav", "Audio-7.mp3", "Sonido-7.wav", "Sonido-7.mp3", "7.wav", "7.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[6]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -943,7 +828,7 @@
                 row: 3,
                 x: 1480,
                 y: 1078,
-                defaultAudioFiles: ["Audio-8.wav", "Audio-8.mp3", "Sonido-8.wav", "Sonido-8.mp3", "8.wav", "8.mp3"],
+                defaultAudioFiles: [ASSET_CONFIG.audioFiles[7]],
                 customImage: null,
                 customAudioBuffer: null,
                 customAudioName: null,
@@ -972,12 +857,12 @@
         let quizScore = 0;
 
         /*************************************************************************
-         * DETECCIÓN AUTOMÁTICA DE ARCHIVOS LOCALES (`Cilindro-1.png`, `Botón-play-audio.png` y Audios)
+         * DETECCIÓN AUTOMÁTICA DE ARCHIVOS LOCALES (`assets/images/` y `assets/audio/`)
          *************************************************************************/
         function tryProbeLocalCylinderImage() {
             const probeImg = new Image();
             probeImg.onload = () => {
-                sharedCylinderImgUrl = "Cilindro-1.png";
+                sharedCylinderImgUrl = ASSET_CONFIG.imagesFolder + ASSET_CONFIG.cylinderImage;
                 sharedCylinderImgLoaded = true;
                 const statusEl = document.getElementById('status-cilindro-img');
                 if (statusEl) statusEl.textContent = "Cilindro-1.png activo";
@@ -986,7 +871,7 @@
             probeImg.onerror = () => {
                 // Mantiene el renderizado 3D dorado idéntico hasta que el usuario arrastre o suba Cilindro-1.png
             };
-            probeImg.src = "Cilindro-1.png";
+            probeImg.src = ASSET_CONFIG.imagesFolder + ASSET_CONFIG.cylinderImage;
         }
 
         function handleSpeakerImgLoaded() {
@@ -1002,7 +887,7 @@
             if (!imgEl.dataset.triedNfd) {
                 imgEl.dataset.triedNfd = "true";
                 // Probar con tilde descompuesta NFD (como en macOS: Boto\u0301n-play-audio.png)
-                imgEl.src = "Boto\u0301n-play-audio.png";
+                imgEl.src = ASSET_CONFIG.imagesFolder + "Boto\u0301n-play-audio.png";
             } else {
                 imgEl.classList.add('hidden');
                 document.getElementById('fallback-speaker-svg').classList.remove('hidden');
@@ -1014,7 +899,7 @@
             for (const cyl of CYLINDERS_DATA) {
                 for (const candidateName of cyl.defaultAudioFiles) {
                     try {
-                        const resp = await fetch(candidateName, { method: 'GET' });
+                        const resp = await fetch(ASSET_CONFIG.audioFolder + candidateName, { method: 'GET' });
                         if (resp.ok) {
                             const contentType = resp.headers.get('content-type') || '';
                             if (contentType.includes('audio') || contentType.includes('octet-stream')) {
@@ -1477,284 +1362,7 @@
             requestAnimationFrame(animateParticles);
         }
 
-        /*************************************************************************
-         * CARGA EN LOTE INTELIGENTE (DRAG & DROP Y SELECTOR MÚLTIPLE)
-         * Asigna automáticamente Cilindro-1.png, Botón-play-audio.png, Referencia.jpg
-         * y los 8 archivos de audio.
-         *************************************************************************/
-        async function processBatchFiles(fileList) {
-            if (!fileList || fileList.length === 0) return;
-            ensureAudioContext();
-
-            const audioFiles = [];
-            const imageFiles = [];
-
-            Array.from(fileList).forEach(file => {
-                if (file.type.startsWith('audio/') || /\.(wav|mp3|ogg|m4a)$/i.test(file.name)) {
-                    audioFiles.push(file);
-                } else if (file.type.startsWith('image/') || /\.(png|jpg|jpeg|webp)$/i.test(file.name)) {
-                    imageFiles.push(file);
-                }
-            });
-
-            // 1. Procesar imágenes según su nombre
-            imageFiles.forEach(imgFile => {
-                const normalizedName = imgFile.name.normalize('NFC').toLowerCase();
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const dataUrl = e.target.result;
-                    if (normalizedName.includes('boton') || normalizedName.includes('botón') || normalizedName.includes('play')) {
-                        const speakerImg = document.getElementById('custom-speaker-img');
-                        speakerImg.src = dataUrl;
-                        handleSpeakerImgLoaded();
-                    } else if (normalizedName.includes('referencia') || normalizedName.includes('fondo')) {
-                        applyCustomBackgroundDataUrl(dataUrl);
-                    } else {
-                        // Por defecto o si se llama Cilindro-1.png, se aplica a los 8 cilindros dorados
-                        sharedCylinderImgUrl = dataUrl;
-                        sharedCylinderImgLoaded = true;
-                        const statusEl = document.getElementById('status-cilindro-img');
-                        if (statusEl) statusEl.textContent = `${imgFile.name} activo`;
-                        renderCylinders();
-                    }
-                };
-                reader.readAsDataURL(imgFile);
-            });
-
-            // 2. Ordenar los archivos de audio por nombre/número y asignarlos a los cilindros 1..8
-            audioFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
-
-            let nextSequentialSlot = 0;
-            for (const audioFile of audioFiles) {
-                try {
-                    const arrayBuf = await audioFile.arrayBuffer();
-                    const decoded = await audioCtx.decodeAudioData(arrayBuf);
-
-                    // Buscar si el nombre incluye un número del 1 al 8 (ej. "Audio-3.wav")
-                    const matchNum = audioFile.name.match(/([1-8])(?!.*\d)/);
-                    let targetCyl = null;
-
-                    if (matchNum) {
-                        const num = parseInt(matchNum[1], 10);
-                        targetCyl = CYLINDERS_DATA.find(c => c.id === num && !c._assignedInBatch);
-                    }
-                    if (!targetCyl) {
-                        while (nextSequentialSlot < CYLINDERS_DATA.length && CYLINDERS_DATA[nextSequentialSlot]._assignedInBatch) {
-                            nextSequentialSlot++;
-                        }
-                        if (nextSequentialSlot < CYLINDERS_DATA.length) {
-                            targetCyl = CYLINDERS_DATA[nextSequentialSlot];
-                        }
-                    }
-
-                    if (targetCyl) {
-                        targetCyl.customAudioBuffer = decoded;
-                        targetCyl.customAudioName = audioFile.name;
-                        targetCyl._assignedInBatch = true;
-                    }
-                } catch (err) {
-                    console.error("Error decodificando audio:", audioFile.name, err);
-                }
-            }
-
-            CYLINDERS_DATA.forEach(c => delete c._assignedInBatch);
-            renderConfigSlots();
-
-            // Mostrar confirmación en el banner
-            const banner = document.getElementById('now-playing-banner');
-            const bannerName = document.getElementById('now-playing-name');
-            banner.style.opacity = '1';
-            bannerName.textContent = `✅ ¡Archivos cargados! (${audioFiles.length} audios, ${imageFiles.length} imágenes)`;
-            document.getElementById('now-playing-timer').textContent = 'Listo';
-        }
-
-        function handleBatchFilesUpload(event) {
-            processBatchFiles(event.target.files);
-        }
-
-        // Configurar Drag & Drop sobre todo el lienzo 1980x1920
-        function setupDragAndDrop() {
-            const stage = document.getElementById('stage-wrapper');
-            const overlay = document.getElementById('dropzone-overlay');
-            let dragCounter = 0;
-
-            window.addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                dragCounter++;
-                overlay.classList.remove('hidden');
-            });
-
-            window.addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
-
-            window.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dragCounter--;
-                if (dragCounter <= 0) {
-                    dragCounter = 0;
-                    overlay.classList.add('hidden');
-                }
-            });
-
-            window.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dragCounter = 0;
-                overlay.classList.add('hidden');
-                if (e.dataTransfer && e.dataTransfer.files.length > 0) {
-                    processBatchFiles(e.dataTransfer.files);
-                }
-            });
-        }
-
-        /*************************************************************************
-         * CONTROLES INDIVIDUALES DEL MODAL DE CONFIGURACIÓN
-         *************************************************************************/
-        function toggleConfigModal(show) {
-            const modal = document.getElementById('config-modal');
-            if (show) {
-                renderConfigSlots();
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
-        }
-
-        function renderConfigSlots() {
-            const grid = document.getElementById('config-slots-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-
-            CYLINDERS_DATA.forEach((cyl) => {
-                const card = document.createElement('div');
-                card.className = 'bg-purple-900/45 border border-purple-400/30 rounded-2xl p-4 flex flex-col justify-between gap-3';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-amber-300 font-extrabold text-xl">${cyl.name}</span>
-                            <p class="text-purple-200 text-sm">
-                                Audio (4.0s): <strong class="text-emerald-300">${cyl.customAudioName ? cyl.customAudioName : `Campana ${cyl.bellFreq} Hz (4.0s)`}</strong>
-                            </p>
-                        </div>
-                        <button onclick="playCylinderSound(${cyl.id}, true)" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition">
-                            ▶️ Probar 4s
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
-                        <label class="px-4 py-2 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-purple-950 font-bold text-sm cursor-pointer transition">
-                            🎵 Subir Audio #${cyl.id} (4s)
-                            <input type="file" accept="audio/*" class="hidden" onchange="handleCylinderAudioUpload(event, ${cyl.id})">
-                        </label>
-                        <label class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm cursor-pointer transition">
-                            🖼️ Imagen Individual
-                            <input type="file" accept="image/*" class="hidden" onchange="handleCylinderImageUpload(event, ${cyl.id})">
-                        </label>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function handleSharedCylinderImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                sharedCylinderImgUrl = e.target.result;
-                sharedCylinderImgLoaded = true;
-                document.getElementById('status-cilindro-img').textContent = file.name;
-                renderCylinders();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handleSpeakerImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const speakerImg = document.getElementById('custom-speaker-img');
-                speakerImg.src = e.target.result;
-                handleSpeakerImgLoaded();
-                document.getElementById('status-speaker-img').textContent = file.name;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function applyCustomBackgroundDataUrl(dataUrl) {
-            const stage = document.getElementById('stage-wrapper');
-            stage.style.backgroundImage = `url('${dataUrl}')`;
-            document.getElementById('base-purple-rect').setAttribute('fill', 'transparent');
-        }
-
-        function handleBackgroundUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                applyCustomBackgroundDataUrl(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function resetCustomBackground() {
-            const stage = document.getElementById('stage-wrapper');
-            stage.style.backgroundImage = 'none';
-            document.getElementById('base-purple-rect').setAttribute('fill', '#7145D6');
-            document.getElementById('vector-background').style.opacity = '1';
-        }
-
-        function handleCylinderImageUpload(event, id) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const cyl = CYLINDERS_DATA.find(c => c.id === id);
-                if (cyl) {
-                    cyl.customImage = e.target.result;
-                    renderCylinders();
-                    renderConfigSlots();
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handleCylinderAudioUpload(event, id) {
-            const file = event.target.files[0];
-            if (!file) return;
-            ensureAudioContext();
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const arrayBuffer = e.target.result;
-                    const decodedBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                    const cyl = CYLINDERS_DATA.find(c => c.id === id);
-                    if (cyl) {
-                        cyl.customAudioBuffer = decodedBuffer;
-                        cyl.customAudioName = file.name;
-                        renderConfigSlots();
-                        playCylinderSound(id, true);
-                    }
-                } catch (err) {
-                    console.error("Error decodificando archivo de audio:", err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function resetAllCustomAssets() {
-            sharedCylinderImgUrl = null;
-            CYLINDERS_DATA.forEach(c => {
-                c.customImage = null;
-                c.customAudioBuffer = null;
-                c.customAudioName = null;
-            });
-            document.getElementById('custom-speaker-img').classList.add('hidden');
-            document.getElementById('fallback-speaker-svg').classList.remove('hidden');
-            renderCylinders();
-            renderConfigSlots();
-            tryProbeLocalCylinderImage();
-        }
+        // Los recursos son fijos para el jugador y se configuran en ASSET_CONFIG.
 
         // Inicialización al cargar la ventana
         window.onload = function () {
@@ -1762,9 +1370,20 @@
             renderEqualizerBars();
             updateStageScale();
             animateParticles();
-            setupDragAndDrop();
+            const speakerImage = document.getElementById('custom-speaker-img');
+            speakerImage.src = ASSET_CONFIG.imagesFolder + ASSET_CONFIG.speakerImage;
             tryProbeLocalCylinderImage();
             tryProbeLocalAudios();
+            if (ASSET_CONFIG.backgroundImage) {
+                const background = new Image();
+                background.onload = () => {
+                    const stage = document.getElementById('stage-wrapper');
+                    stage.style.backgroundImage = `url("${ASSET_CONFIG.imagesFolder + ASSET_CONFIG.backgroundImage}")`;
+                    document.getElementById('base-purple-rect').setAttribute('fill', 'transparent');
+                };
+                background.onerror = () => console.warn('No se encontró el fondo:', ASSET_CONFIG.backgroundImage);
+                background.src = ASSET_CONFIG.imagesFolder + ASSET_CONFIG.backgroundImage;
+            }
             window.addEventListener('resize', updateStageScale);
         };
     </script>
