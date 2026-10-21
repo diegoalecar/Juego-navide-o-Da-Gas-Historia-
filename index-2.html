@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El Tintineo de Da-Gas</title>
+<style>
+  :root{
+    --purple:#7042d7; --purple-light:#a77af3; --gold:#f5bd55;
+    --white:#fff; --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+  body{background:var(--purple);color:#fff;overflow-x:hidden}
+  button{font:inherit}
+  .game{
+    position:relative; isolation:isolate; width:100%; min-height:100svh;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    padding:clamp(18px,3.4vh,48px) 5vw calc(clamp(18px,3vh,42px) + var(--safe-bottom));
+    overflow:hidden; background:
+      radial-gradient(circle at 18% 14%, #a47aef 0 4px, transparent 5px),
+      radial-gradient(circle at 88% 26%, #a47aef 0 6px, transparent 7px),
+      radial-gradient(circle at 9% 70%, #a47aef 0 5px, transparent 6px),
+      radial-gradient(circle at 82% 82%, #a47aef 0 4px, transparent 5px),
+      var(--purple);
+  }
+  .ornament{
+    position:absolute; inset:1% 2%; z-index:-1; pointer-events:none; opacity:.38;
+    border:3px solid #a77af3; border-radius:45% 45% 18% 18% / 12% 12% 8% 8%;
+    transform:scaleX(.98);
+  }
+  .ornament:before,.ornament:after{content:"";position:absolute;border:3px solid #a77af3;border-radius:45% 45% 18% 18% / 12% 12% 8% 8%;inset:2% 3%}
+  .ornament:after{inset:17% 13% 14%;border-radius:40% 40% 18% 18%}
+  .stars{position:absolute;inset:0;z-index:-1;pointer-events:none;color:#b68cff;font-size:clamp(24px,5vw,54px)}
+  .star{position:absolute;line-height:1}
+  .star:nth-child(1){top:3%;left:3%}.star:nth-child(2){top:13%;right:4%}.star:nth-child(3){top:34%;left:3%}
+  .star:nth-child(4){top:47%;right:5%}.star:nth-child(5){bottom:21%;left:5%}.star:nth-child(6){bottom:7%;right:8%}
+  .top{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,18px);padding-top:var(--safe-top)}
+  .logo-mark{width:clamp(64px,12vw,128px);aspect-ratio:1;border-radius:50%;background:#fff;color:var(--purple);display:grid;place-items:center;font-size:clamp(26px,5vw,52px);font-weight:900;font-style:italic;box-shadow:0 4px 0 #e9dfff}
+  .logo-mark small{display:block;font-size:.18em;letter-spacing:.08em;font-style:normal;margin-top:-.8em}
+  h1{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;text-align:center;font-size:clamp(27px,5.8vw,62px);line-height:1;margin:0;text-shadow:0 2px 0 #5b2db9}
+  .status{font-size:clamp(13px,2.5vw,22px);text-align:center;min-height:1.4em;max-width:34ch;margin:0;color:#fff}
+  .middle{width:min(100%,850px);flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(14px,3vh,36px) 0}
+  .bells{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(2px,2.5vw,28px);row-gap:clamp(12px,2.8vh,34px);align-items:center;justify-items:center}
+  .bell{
+    position:relative;appearance:none;border:0;background:transparent;color:white;width:100%;max-width:220px;
+    aspect-ratio:.77;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;filter:drop-shadow(0 5px 3px #3b1d7c55);
+    transition:transform .15s ease,filter .15s ease; outline-offset:3px;
+  }
+  .bell:nth-child(1),.bell:nth-child(2){grid-column:span 1}
+  .bell:nth-child(1){grid-column:1}.bell:nth-child(2){grid-column:3}
+  .bell:nth-child(3){grid-column:1}.bell:nth-child(4){grid-column:2}.bell:nth-child(5){grid-column:3}
+  .bell:nth-child(6){grid-column:1}.bell:nth-child(7){grid-column:2}.bell:nth-child(8){grid-column:3}
+  .bell:disabled{cursor:default}
+  .bell .bow{position:absolute;top:3%;width:100%;height:39%;z-index:2;overflow:visible}
+  .bell .cylinder{position:absolute;top:33%;width:51%;height:55%;border-radius:27% 27% 22% 22% / 15% 15% 18% 18%;
+    background:linear-gradient(90deg,#a85b0d 0%,#f8c65c 12%,#fff0a4 25%,#c87917 38%,#ffe08a 54%,#a95708 72%,#ffdc72 86%,#9c4b05 100%);
+    border:2px solid #ffdb83;box-shadow:inset 0 0 0 2px #b56a15, inset 0 0 14px #7d3c00;
+  }
+  .cylinder:before{content:"";position:absolute;top:-13%;left:26%;width:48%;height:16%;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,#a85b0d,#ffdf7c,#a85b0d);border:1px solid #ffe49a}
+  .cylinder:after{content:"";position:absolute;bottom:-7%;left:18%;width:64%;height:9%;border-radius:0 0 8px 8px;background:linear-gradient(90deg,#a85b0d,#ffe18a,#a85b0d);border:1px solid #f6c45d}
+  .band{position:absolute;top:56%;left:-3%;width:106%;height:5%;border-top:2px solid #ffe48d;border-bottom:1px solid #a95c0c;transform:rotate(-1deg)}
+  .brand{position:absolute;top:39%;left:0;width:100%;text-align:center;color:#21150a;font-weight:900;font-style:italic;font-size:clamp(9px,1.8vw,17px);line-height:1.1;letter-spacing:-.05em;text-shadow:0 1px #ffdd79}
+  .brand small{display:block;font-size:.54em;letter-spacing:.04em;font-style:normal}
+  .bell-number{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:clamp(10px,1.5vw,14px);font-weight:700;color:#fff;opacity:.88}
+  .bell.active{transform:translateY(-5px) rotate(-2deg) scale(1.05);filter:drop-shadow(0 0 13px #ffe6a3)}
+  .bell.active .cylinder{filter:brightness(1.35)}
+  .bell.correct .cylinder{box-shadow:0 0 0 3px #fff7c6,inset 0 0 14px #7d3c00}
+  .bell:focus-visible{outline:3px solid #fff;border-radius:14px}
+  .bottom{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,22px)}
+  .progress{width:min(82%,500px);height:7px;background:#4e2aab;border-radius:20px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#fff1b5,#f4bd53);transition:width .2s ease}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
+  .btn{border:0;border-radius:999px;padding:clamp(12px,2vh,18px) clamp(22px,5vw,44px);font-weight:800;cursor:pointer;min-height:48px}
+  .btn.primary{background:#fff;color:#7042d7;box-shadow:0 4px 0 #d9c7ff}
+  .btn.secondary{background:#5c31b9;color:#fff;border:1px solid #c6a8ff}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .hint{font-size:12px;opacity:.8;text-align:center;margin:0}
+  .overlay{position:absolute;inset:0;background:#381477b8;display:none;align-items:center;justify-content:center;padding:24px;z-index:5;backdrop-filter:blur(4px)}
+  .overlay.show{display:flex}
+  .dialog{width:min(100%,420px);background:#fff;color:#4f2b9d;border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 20px 60px #260d5b77}
+  .dialog h2{font:italic 700 clamp(26px,6vw,38px)/1.1 Georgia,serif;margin:0 0 12px}
+  .dialog p{line-height:1.5;margin:0 0 20px}
+  @media (min-width:700px){.game{max-width:700px;margin:0 auto;min-height:100svh}.bell{max-width:185px}}
+  @media (max-height:700px){.game{padding-top:12px;padding-bottom:12px}.logo-mark{width:52px}.top{gap:6px}.middle{padding:8px 0}.bells{row-gap:8px}.bell{max-width:120px}.bottom{gap:8px}.btn{padding:10px 22px;min-height:42px}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="game" aria-label="El Tintineo de Da-Gas">
+  <div class="ornament" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span></div>
+  <header class="top">
+    <div class="logo-mark" aria-label="Logotipo provisional Da-Gas">D<small>DA-GAS</small></div>
+    <h1>El Tintineo de Da-Gas</h1>
+    <p class="status" id="status" aria-live="polite">Escucha la secuencia y repítela en el mismo orden.</p>
+  </header>
+  <section class="middle" aria-label="Campanas interactivas">
+    <div class="bells" id="bells"></div>
+  </section>
+  <footer class="bottom">
+    <div class="progress" aria-label="Progreso de la secuencia"><div class="progress-fill" id="progress"></div></div>
+    <div class="actions">
+      <button class="btn primary" id="startBtn">Comenzar</button>
+      <button class="btn secondary" id="replayBtn" disabled>Volver a escuchar</button>
+    </div>
+    <p class="hint" id="hint">Memoriza el orden de las 8 campanas.</p>
+  </footer>
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <div class="dialog">
+      <h2 id="dialogTitle">¡Lo lograste!</h2>
+      <p id="dialogText">Has completado la secuencia de El Tintineo de Da-Gas.</p>
+      <button class="btn primary" id="againBtn">Jugar de nuevo</button>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  // Sustituir estos nombres por las rutas reales cuando se entreguen los 8 audios.
+  // Por ahora se utiliza un tono de prueba generado en el navegador.
+  const AUDIO_FILES = [
+    null, null, null, null, null, null, null, null
+  ];
+  const SEQUENCE = [0, 3, 1, 6, 2, 7, 4, 5]; // Secuencia provisional; confirmar con los audios finales.
+  const $ = (id) => document.getElementById(id);
+  const bellsEl = $("bells"), statusEl = $("status"), hintEl = $("hint");
+  const startBtn = $("startBtn"), replayBtn = $("replayBtn"), progressEl = $("progress");
+  const overlay = $("overlay");
+  let phase = "idle", position = 0, audioContext = null, players = [], playbackToken = 0;
+
+  const bowSvg = `<svg class="bow" viewBox="0 0 120 70" aria-hidden="true"><defs><linearGradient id="gold" x1="0" x2="1"><stop stop-color="#a95a0b"/><stop offset=".25" stop-color="#ffe59a"/><stop offset=".52" stop-color="#c87917"/><stop offset=".78" stop-color="#fff0ad"/><stop offset="1" stop-color="#a95a0b"/></linearGradient></defs><path d="M60 42 C42 18 7 -4 7 20 C7 38 36 42 60 42 C40 46 21 58 13 65 L40 52 L60 42 C78 18 113 -4 113 20 C113 38 84 42 60 42 C80 46 99 58 107 65 L80 52 Z" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/><path d="M60 38 L57 0 L66 0 L64 39" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/><path d="M53 40 Q60 32 67 40 L65 48 L55 48 Z" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/></svg>`;
+  for (let i=0;i<8;i++){
+    const b=document.createElement("button");
+    b.className="bell"; b.type="button"; b.dataset.index=i;
+    b.setAttribute("aria-label",`Campana ${i+1}`);
+    b.innerHTML=`${bowSvg}<span class="cylinder"><span class="band"></span><span class="brand">D<span style="font-size:.7em">Z</span><small>DA-GAS</small></span></span><span class="bell-number">${String(i+1).padStart(2,"0")}</span>`;
+    b.addEventListener("click",()=>chooseBell(i));
+    bellsEl.appendChild(b);
+  }
+  const bells=[...document.querySelectorAll(".bell")];
+
+  function setPhase(next){ phase=next; bells.forEach(b=>b.disabled=next!=="input"); }
+  function updateProgress(){progressEl.style.width=(position/SEQUENCE.length*100)+"%";}
+  function setStatus(text){statusEl.textContent=text;}
+  function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+  function ensureAudio(){
+    if(!audioContext) audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioContext.state==="suspended") audioContext.resume();
+  }
+  async function playSound(index){
+    const src=AUDIO_FILES[index];
+    if(src){
+      if(!players[index]){players[index]=new Audio(src);players[index].preload="auto";}
+      const p=players[index]; p.pause();p.currentTime=0;
+      await new Promise(resolve=>{p.onended=resolve;p.onerror=resolve;const promise=p.play();if(promise)promise.catch(resolve);});
+      return;
+    }
+    // Tono de prueba temporal; se reemplazará por los archivos finales.
+    ensureAudio();
+    const freqs=[523.25,587.33,659.25,698.46,783.99,880,987.77,1046.5];
+    const osc=audioContext.createOscillator(), gain=audioContext.createGain();
+    osc.type="sine";osc.frequency.value=freqs[index];
+    gain.gain.setValueAtTime(0.0001,audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.22,audioContext.currentTime+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+0.42);
+    osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+0.45);
+    await wait(470);
+  }
+  async function animateBell(index,token){
+    if(token!==playbackToken)return;
+    bells[index].classList.add("active");
+    await playSound(index);
+    bells[index].classList.remove("active");
+  }
+  async function playSequence(){
+    const token=++playbackToken;setPhase("demo");position=0;updateProgress();
+    replayBtn.disabled=true;startBtn.disabled=true;
+    setStatus("Escucha con atención…");hintEl.textContent="Observa qué campanas suenan y en qué orden.";
+    await wait(450);
+    for(const index of SEQUENCE){
+      if(token!==playbackToken)return;
+      await animateBell(index,token);
+      await wait(160);
+    }
+    if(token!==playbackToken)return;
+    setPhase("input");replayBtn.disabled=false;startBtn.disabled=false;
+    setStatus("¡Tu turno! Repite la secuencia en el mismo orden.");
+    hintEl.textContent=`Has repetido ${position} de ${SEQUENCE.length} sonidos.`;
+  }
+  async function chooseBell(index){
+    if(phase!=="input")return;
+    setPhase("checking");
+    const token=playbackToken;
+    bells[index].classList.add("active");
+    await playSound(index);
+    bells[index].classList.remove("active");
+    if(token!==playbackToken)return;
+    if(index!==SEQUENCE[position]){
+      setPhase("input");
+      setStatus("¡Casi! Escucha la secuencia otra vez e inténtalo de nuevo.");
+      hintEl.textContent="Tu progreso se reinició; la secuencia no cambia.";
+      position=0;updateProgress();
+      replayBtn.disabled=false;
+      return;
+    }
+    position++;updateProgress();
+    if(position===SEQUENCE.length){
+      setPhase("finish");
+      replayBtn.disabled=true;startBtn.disabled=true;
+      setStatus("¡Excelente! Reproduciendo la secuencia completa…");
+      await wait(500);
+      const finishToken=++playbackToken;
+      for(const idx of SEQUENCE){if(finishToken!==playbackToken)return;await animateBell(idx,finishToken);await wait(140);}
+      setStatus("¡Lo lograste!");hintEl.textContent="Completaste El Tintineo de Da-Gas.";
+      $("dialogTitle").textContent="¡Lo lograste!";
+      $("dialogText").textContent="Has completado la secuencia de El Tintineo de Da-Gas. ¡Felices fiestas!";
+      overlay.classList.add("show");
+    }else{
+      setPhase("input");
+      hintEl.textContent=`Has repetido ${position} de ${SEQUENCE.length} sonidos.`;
+      setStatus("¡Correcto! Continúa con la siguiente campana.");
+    }
+  }
+  startBtn.addEventListener("click",async()=>{
+    overlay.classList.remove("show");
+    if(phase==="idle"||phase==="finish"){position=0;}
+    await playSequence();
+  });
+  replayBtn.addEventListener("click",playSequence);
+  $("againBtn").addEventListener("click",()=>{overlay.classList.remove("show");position=0;updateProgress();setPhase("idle");setStatus("Escucha la secuencia y repítela en el mismo orden.");hintEl.textContent="Memoriza el orden de las 8 campanas.";startBtn.disabled=false;startBtn.textContent="Comenzar";replayBtn.disabled=true;});
+  setPhase("idle");
+})();
+</script>
+</body>
+</html>
