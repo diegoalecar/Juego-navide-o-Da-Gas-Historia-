@@ -1,236 +1,1772 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>El Tintineo de Da-Gas</title>
-<style>
-  :root{
-    --purple:#7042d7; --purple-light:#a77af3; --gold:#f5bd55;
-    --white:#fff; --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
-  body{background:var(--purple);color:#fff;overflow-x:hidden}
-  button{font:inherit}
-  .game{
-    position:relative; isolation:isolate; width:100%; min-height:100svh;
-    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
-    padding:clamp(18px,3.4vh,48px) 5vw calc(clamp(18px,3vh,42px) + var(--safe-bottom));
-    overflow:hidden; background:
-      radial-gradient(circle at 18% 14%, #a47aef 0 4px, transparent 5px),
-      radial-gradient(circle at 88% 26%, #a47aef 0 6px, transparent 7px),
-      radial-gradient(circle at 9% 70%, #a47aef 0 5px, transparent 6px),
-      radial-gradient(circle at 82% 82%, #a47aef 0 4px, transparent 5px),
-      var(--purple);
-  }
-  .ornament{
-    position:absolute; inset:1% 2%; z-index:-1; pointer-events:none; opacity:.38;
-    border:3px solid #a77af3; border-radius:45% 45% 18% 18% / 12% 12% 8% 8%;
-    transform:scaleX(.98);
-  }
-  .ornament:before,.ornament:after{content:"";position:absolute;border:3px solid #a77af3;border-radius:45% 45% 18% 18% / 12% 12% 8% 8%;inset:2% 3%}
-  .ornament:after{inset:17% 13% 14%;border-radius:40% 40% 18% 18%}
-  .stars{position:absolute;inset:0;z-index:-1;pointer-events:none;color:#b68cff;font-size:clamp(24px,5vw,54px)}
-  .star{position:absolute;line-height:1}
-  .star:nth-child(1){top:3%;left:3%}.star:nth-child(2){top:13%;right:4%}.star:nth-child(3){top:34%;left:3%}
-  .star:nth-child(4){top:47%;right:5%}.star:nth-child(5){bottom:21%;left:5%}.star:nth-child(6){bottom:7%;right:8%}
-  .top{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,18px);padding-top:var(--safe-top)}
-  .logo-mark{width:clamp(64px,12vw,128px);aspect-ratio:1;border-radius:50%;background:#fff;color:var(--purple);display:grid;place-items:center;font-size:clamp(26px,5vw,52px);font-weight:900;font-style:italic;box-shadow:0 4px 0 #e9dfff}
-  .logo-mark small{display:block;font-size:.18em;letter-spacing:.08em;font-style:normal;margin-top:-.8em}
-  h1{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;text-align:center;font-size:clamp(27px,5.8vw,62px);line-height:1;margin:0;text-shadow:0 2px 0 #5b2db9}
-  .status{font-size:clamp(13px,2.5vw,22px);text-align:center;min-height:1.4em;max-width:34ch;margin:0;color:#fff}
-  .middle{width:min(100%,850px);flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(14px,3vh,36px) 0}
-  .bells{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(2px,2.5vw,28px);row-gap:clamp(12px,2.8vh,34px);align-items:center;justify-items:center}
-  .bell{
-    position:relative;appearance:none;border:0;background:transparent;color:white;width:100%;max-width:220px;
-    aspect-ratio:.77;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
-    -webkit-tap-highlight-color:transparent;touch-action:manipulation;filter:drop-shadow(0 5px 3px #3b1d7c55);
-    transition:transform .15s ease,filter .15s ease; outline-offset:3px;
-  }
-  .bell:nth-child(1),.bell:nth-child(2){grid-column:span 1}
-  .bell:nth-child(1){grid-column:1}.bell:nth-child(2){grid-column:3}
-  .bell:nth-child(3){grid-column:1}.bell:nth-child(4){grid-column:2}.bell:nth-child(5){grid-column:3}
-  .bell:nth-child(6){grid-column:1}.bell:nth-child(7){grid-column:2}.bell:nth-child(8){grid-column:3}
-  .bell:disabled{cursor:default}
-  .bell .bow{position:absolute;top:3%;width:100%;height:39%;z-index:2;overflow:visible}
-  .bell .cylinder{position:absolute;top:33%;width:51%;height:55%;border-radius:27% 27% 22% 22% / 15% 15% 18% 18%;
-    background:linear-gradient(90deg,#a85b0d 0%,#f8c65c 12%,#fff0a4 25%,#c87917 38%,#ffe08a 54%,#a95708 72%,#ffdc72 86%,#9c4b05 100%);
-    border:2px solid #ffdb83;box-shadow:inset 0 0 0 2px #b56a15, inset 0 0 14px #7d3c00;
-  }
-  .cylinder:before{content:"";position:absolute;top:-13%;left:26%;width:48%;height:16%;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,#a85b0d,#ffdf7c,#a85b0d);border:1px solid #ffe49a}
-  .cylinder:after{content:"";position:absolute;bottom:-7%;left:18%;width:64%;height:9%;border-radius:0 0 8px 8px;background:linear-gradient(90deg,#a85b0d,#ffe18a,#a85b0d);border:1px solid #f6c45d}
-  .band{position:absolute;top:56%;left:-3%;width:106%;height:5%;border-top:2px solid #ffe48d;border-bottom:1px solid #a95c0c;transform:rotate(-1deg)}
-  .brand{position:absolute;top:39%;left:0;width:100%;text-align:center;color:#21150a;font-weight:900;font-style:italic;font-size:clamp(9px,1.8vw,17px);line-height:1.1;letter-spacing:-.05em;text-shadow:0 1px #ffdd79}
-  .brand small{display:block;font-size:.54em;letter-spacing:.04em;font-style:normal}
-  .bell-number{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:clamp(10px,1.5vw,14px);font-weight:700;color:#fff;opacity:.88}
-  .bell.active{transform:translateY(-5px) rotate(-2deg) scale(1.05);filter:drop-shadow(0 0 13px #ffe6a3)}
-  .bell.active .cylinder{filter:brightness(1.35)}
-  .bell.correct .cylinder{box-shadow:0 0 0 3px #fff7c6,inset 0 0 14px #7d3c00}
-  .bell:focus-visible{outline:3px solid #fff;border-radius:14px}
-  .bottom{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,22px)}
-  .progress{width:min(82%,500px);height:7px;background:#4e2aab;border-radius:20px;overflow:hidden}
-  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#fff1b5,#f4bd53);transition:width .2s ease}
-  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%}
-  .btn{border:0;border-radius:999px;padding:clamp(12px,2vh,18px) clamp(22px,5vw,44px);font-weight:800;cursor:pointer;min-height:48px}
-  .btn.primary{background:#fff;color:#7042d7;box-shadow:0 4px 0 #d9c7ff}
-  .btn.secondary{background:#5c31b9;color:#fff;border:1px solid #c6a8ff}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
-  .hint{font-size:12px;opacity:.8;text-align:center;margin:0}
-  .overlay{position:absolute;inset:0;background:#381477b8;display:none;align-items:center;justify-content:center;padding:24px;z-index:5;backdrop-filter:blur(4px)}
-  .overlay.show{display:flex}
-  .dialog{width:min(100%,420px);background:#fff;color:#4f2b9d;border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 20px 60px #260d5b77}
-  .dialog h2{font:italic 700 clamp(26px,6vw,38px)/1.1 Georgia,serif;margin:0 0 12px}
-  .dialog p{line-height:1.5;margin:0 0 20px}
-  @media (min-width:700px){.game{max-width:700px;margin:0 auto;min-height:100svh}.bell{max-width:185px}}
-  @media (max-height:700px){.game{padding-top:12px;padding-bottom:12px}.logo-mark{width:52px}.top{gap:6px}.middle{padding:8px 0}.bells{row-gap:8px}.bell{max-width:120px}.bottom{gap:8px}.btn{padding:10px 22px;min-height:42px}}
-  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El tintineo de Da-Gas - Juego Interactivo (1980x1920)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tipografía Serif elegante similar a la referencia para "El tintineo de Da-Gas" e Inter para UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@1,700;1,800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-purple: #7145D6;
+            --line-lilac: #9A75F0;
+            --sparkle-lilac: #B392FF;
+            --canvas-w: 1980px;
+            --canvas-h: 1920px;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #160c2e;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Permitir scroll cuando se activa el modo 1:1 nativo (1980x1920 real) */
+        body.native-scroll {
+            overflow: auto;
+            display: block;
+        }
+
+        /* Contenedor principal de 1980 x 1920 píxeles exactos */
+        #stage-wrapper {
+            position: relative;
+            width: 1980px;
+            height: 1920px;
+            background-color: var(--bg-purple);
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            box-shadow: 0 25px 90px rgba(0, 0, 0, 0.75);
+            transform-origin: center center;
+            flex-shrink: 0;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        body.native-scroll #stage-wrapper {
+            transform: none !important;
+            margin: 0 auto;
+        }
+
+        /* Tipografía del título principal "El tintineo de Da-Gas" */
+        .title-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-weight: 800;
+            color: #FFFFFF;
+            text-shadow: 0 4px 18px rgba(45, 14, 115, 0.45);
+            letter-spacing: -0.01em;
+        }
+
+        /* Animación de balanceo pendular para los cilindros dorados */
+        @keyframes swingCylinder {
+            0%   { transform: rotate(0deg) scale(1); }
+            12%  { transform: rotate(11deg) scale(1.05); }
+            26%  { transform: rotate(-9.5deg) scale(1.05); }
+            40%  { transform: rotate(7.5deg) scale(1.04); }
+            54%  { transform: rotate(-5.5deg) scale(1.03); }
+            68%  { transform: rotate(3.8deg) scale(1.02); }
+            82%  { transform: rotate(-2deg) scale(1.01); }
+            92%  { transform: rotate(1deg) scale(1.005); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        @keyframes idleFloat {
+            0%, 100% { transform: rotate(-0.7deg); }
+            50% { transform: rotate(0.7deg); }
+        }
+
+        .cylinder-item {
+            transform-origin: 50% 8px;
+            cursor: pointer;
+            transition: filter 0.25s ease, transform 0.25s ease;
+            animation: idleFloat 4.5s ease-in-out infinite;
+        }
+
+        .cylinder-item:nth-child(even) {
+            animation-delay: -2.2s;
+        }
+
+        .cylinder-item:hover {
+            filter: drop-shadow(0 14px 28px rgba(255, 215, 70, 0.55)) brightness(1.06);
+        }
+
+        .cylinder-item.playing {
+            animation: swingCylinder 1.35s ease-in-out 3;
+            filter: drop-shadow(0 0 36px rgba(255, 230, 110, 0.95)) brightness(1.12);
+            z-index: 30;
+        }
+
+        .cylinder-item.correct-hit {
+            filter: drop-shadow(0 0 48px rgba(74, 222, 128, 1)) brightness(1.15);
+        }
+
+        .cylinder-item.wrong-hit {
+            animation: shakeWrong 0.45s ease-in-out;
+            filter: drop-shadow(0 0 35px rgba(248, 113, 113, 0.95));
+        }
+
+        @keyframes shakeWrong {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-16px) rotate(-4deg); }
+            40%, 80% { transform: translateX(16px) rotate(4deg); }
+        }
+
+        /* Destellos de fondo suaves */
+        @keyframes twinkleStar {
+            0%, 100% { opacity: 0.65; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.14) rotate(8deg); }
+        }
+
+        .bg-sparkle {
+            animation: twinkleStar 4s ease-in-out infinite;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        /* Ondas expansivas cuando el cilindro blanco inferior reproduce sonido */
+        @keyframes pulseRing {
+            0% {
+                transform: translate(-50%, -50%) scale(0.88);
+                opacity: 0.75;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.65);
+                opacity: 0;
+            }
+        }
+
+        .sound-wave-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 240px;
+            height: 340px;
+            border-radius: 90px;
+            border: 4px solid rgba(255, 255, 255, 0.75);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .speaker-active .sound-wave-ring.ring-1 {
+            animation: pulseRing 1.3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        }
+        .speaker-active .sound-wave-ring.ring-2 {
+            animation: pulseRing 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.45s infinite;
+        }
+        .speaker-active .sound-wave-ring.ring-3 {
+            animation: pulseRing 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.9s infinite;
+        }
+
+        /* Barras del ecualizador dentro del cilindro blanco inferior */
+        .eq-bar {
+            transition: width 0.08s ease-out, background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        /* Partículas mágicas al tocar */
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            width: 1980px;
+            height: 1920px;
+            pointer-events: none;
+            z-index: 45;
+        }
+
+        /* Controles flotantes discretos */
+        .hud-glass {
+            background: rgba(34, 15, 78, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 255, 255, 0.22);
+        }
+
+        /* Animación de pulso en el botón Botón-play-audio.png cuando suena */
+        @keyframes pulseSpeakerImg {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 12px 24px rgba(32,10,80,0.45)); }
+            50% { transform: scale(1.06); filter: drop-shadow(0 0 36px rgba(255, 255, 255, 0.95)); }
+        }
+
+        .speaker-active #custom-speaker-img {
+            animation: pulseSpeakerImg 0.65s ease-in-out infinite;
+        }
+
+        /* Drag & Drop Overlay */
+        #dropzone-overlay {
+            background: rgba(28, 11, 68, 0.88);
+            backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
 <body>
-<main class="game" aria-label="El Tintineo de Da-Gas">
-  <div class="ornament" aria-hidden="true"></div>
-  <div class="stars" aria-hidden="true"><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span><span class="star">✳</span></div>
-  <header class="top">
-    <div class="logo-mark" aria-label="Logotipo provisional Da-Gas">D<small>DA-GAS</small></div>
-    <h1>El Tintineo de Da-Gas</h1>
-    <p class="status" id="status" aria-live="polite">Escucha la secuencia y repítela en el mismo orden.</p>
-  </header>
-  <section class="middle" aria-label="Campanas interactivas">
-    <div class="bells" id="bells"></div>
-  </section>
-  <footer class="bottom">
-    <div class="progress" aria-label="Progreso de la secuencia"><div class="progress-fill" id="progress"></div></div>
-    <div class="actions">
-      <button class="btn primary" id="startBtn">Comenzar</button>
-      <button class="btn secondary" id="replayBtn" disabled>Volver a escuchar</button>
-    </div>
-    <p class="hint" id="hint">Memoriza el orden de las 8 campanas.</p>
-  </footer>
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
-    <div class="dialog">
-      <h2 id="dialogTitle">¡Lo lograste!</h2>
-      <p id="dialogText">Has completado la secuencia de El Tintineo de Da-Gas.</p>
-      <button class="btn primary" id="againBtn">Jugar de nuevo</button>
-    </div>
-  </div>
-</main>
-<script>
-(() => {
-  // Sustituir estos nombres por las rutas reales cuando se entreguen los 8 audios.
-  // Por ahora se utiliza un tono de prueba generado en el navegador.
-  const AUDIO_FILES = [
-    null, null, null, null, null, null, null, null
-  ];
-  const SEQUENCE = [0, 3, 1, 6, 2, 7, 4, 5]; // Secuencia provisional; confirmar con los audios finales.
-  const $ = (id) => document.getElementById(id);
-  const bellsEl = $("bells"), statusEl = $("status"), hintEl = $("hint");
-  const startBtn = $("startBtn"), replayBtn = $("replayBtn"), progressEl = $("progress");
-  const overlay = $("overlay");
-  let phase = "idle", position = 0, audioContext = null, players = [], playbackToken = 0;
 
-  const bowSvg = `<svg class="bow" viewBox="0 0 120 70" aria-hidden="true"><defs><linearGradient id="gold" x1="0" x2="1"><stop stop-color="#a95a0b"/><stop offset=".25" stop-color="#ffe59a"/><stop offset=".52" stop-color="#c87917"/><stop offset=".78" stop-color="#fff0ad"/><stop offset="1" stop-color="#a95a0b"/></linearGradient></defs><path d="M60 42 C42 18 7 -4 7 20 C7 38 36 42 60 42 C40 46 21 58 13 65 L40 52 L60 42 C78 18 113 -4 113 20 C113 38 84 42 60 42 C80 46 99 58 107 65 L80 52 Z" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/><path d="M60 38 L57 0 L66 0 L64 39" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/><path d="M53 40 Q60 32 67 40 L65 48 L55 48 Z" fill="url(#gold)" stroke="#ffe39a" stroke-width="1.5"/></svg>`;
-  for (let i=0;i<8;i++){
-    const b=document.createElement("button");
-    b.className="bell"; b.type="button"; b.dataset.index=i;
-    b.setAttribute("aria-label",`Campana ${i+1}`);
-    b.innerHTML=`${bowSvg}<span class="cylinder"><span class="band"></span><span class="brand">D<span style="font-size:.7em">Z</span><small>DA-GAS</small></span></span><span class="bell-number">${String(i+1).padStart(2,"0")}</span>`;
-    b.addEventListener("click",()=>chooseBell(i));
-    bellsEl.appendChild(b);
-  }
-  const bells=[...document.querySelectorAll(".bell")];
+    <!-- LIENZO PRINCIPAL EXACTO DE 1980 x 1920 PÍXELES -->
+    <div id="stage-wrapper" role="application" aria-label="Juego interactivo El tintineo de Da-Gas 1980x1920">
 
-  function setPhase(next){ phase=next; bells.forEach(b=>b.disabled=next!=="input"); }
-  function updateProgress(){progressEl.style.width=(position/SEQUENCE.length*100)+"%";}
-  function setStatus(text){statusEl.textContent=text;}
-  function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
-  function ensureAudio(){
-    if(!audioContext) audioContext=new (window.AudioContext||window.webkitAudioContext)();
-    if(audioContext.state==="suspended") audioContext.resume();
-  }
-  async function playSound(index){
-    const src=AUDIO_FILES[index];
-    if(src){
-      if(!players[index]){players[index]=new Audio(src);players[index].preload="auto";}
-      const p=players[index]; p.pause();p.currentTime=0;
-      await new Promise(resolve=>{p.onended=resolve;p.onerror=resolve;const promise=p.play();if(promise)promise.catch(resolve);});
-      return;
-    }
-    // Tono de prueba temporal; se reemplazará por los archivos finales.
-    ensureAudio();
-    const freqs=[523.25,587.33,659.25,698.46,783.99,880,987.77,1046.5];
-    const osc=audioContext.createOscillator(), gain=audioContext.createGain();
-    osc.type="sine";osc.frequency.value=freqs[index];
-    gain.gain.setValueAtTime(0.0001,audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.22,audioContext.currentTime+0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+0.42);
-    osc.connect(gain);gain.connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+0.45);
-    await wait(470);
-  }
-  async function animateBell(index,token){
-    if(token!==playbackToken)return;
-    bells[index].classList.add("active");
-    await playSound(index);
-    bells[index].classList.remove("active");
-  }
-  async function playSequence(){
-    const token=++playbackToken;setPhase("demo");position=0;updateProgress();
-    replayBtn.disabled=true;startBtn.disabled=true;
-    setStatus("Escucha con atención…");hintEl.textContent="Observa qué campanas suenan y en qué orden.";
-    await wait(450);
-    for(const index of SEQUENCE){
-      if(token!==playbackToken)return;
-      await animateBell(index,token);
-      await wait(160);
-    }
-    if(token!==playbackToken)return;
-    setPhase("input");replayBtn.disabled=false;startBtn.disabled=false;
-    setStatus("¡Tu turno! Repite la secuencia en el mismo orden.");
-    hintEl.textContent=`Has repetido ${position} de ${SEQUENCE.length} sonidos.`;
-  }
-  async function chooseBell(index){
-    if(phase!=="input")return;
-    setPhase("checking");
-    const token=playbackToken;
-    bells[index].classList.add("active");
-    await playSound(index);
-    bells[index].classList.remove("active");
-    if(token!==playbackToken)return;
-    if(index!==SEQUENCE[position]){
-      setPhase("input");
-      setStatus("¡Casi! Escucha la secuencia otra vez e inténtalo de nuevo.");
-      hintEl.textContent="Tu progreso se reinició; la secuencia no cambia.";
-      position=0;updateProgress();
-      replayBtn.disabled=false;
-      return;
-    }
-    position++;updateProgress();
-    if(position===SEQUENCE.length){
-      setPhase("finish");
-      replayBtn.disabled=true;startBtn.disabled=true;
-      setStatus("¡Excelente! Reproduciendo la secuencia completa…");
-      await wait(500);
-      const finishToken=++playbackToken;
-      for(const idx of SEQUENCE){if(finishToken!==playbackToken)return;await animateBell(idx,finishToken);await wait(140);}
-      setStatus("¡Lo lograste!");hintEl.textContent="Completaste El Tintineo de Da-Gas.";
-      $("dialogTitle").textContent="¡Lo lograste!";
-      $("dialogText").textContent="Has completado la secuencia de El Tintineo de Da-Gas. ¡Felices fiestas!";
-      overlay.classList.add("show");
-    }else{
-      setPhase("input");
-      hintEl.textContent=`Has repetido ${position} de ${SEQUENCE.length} sonidos.`;
-      setStatus("¡Correcto! Continúa con la siguiente campana.");
-    }
-  }
-  startBtn.addEventListener("click",async()=>{
-    overlay.classList.remove("show");
-    if(phase==="idle"||phase==="finish"){position=0;}
-    await playSequence();
-  });
-  replayBtn.addEventListener("click",playSequence);
-  $("againBtn").addEventListener("click",()=>{overlay.classList.remove("show");position=0;updateProgress();setPhase("idle");setStatus("Escucha la secuencia y repítela en el mismo orden.");hintEl.textContent="Memoriza el orden de las 8 campanas.";startBtn.disabled=false;startBtn.textContent="Comenzar";replayBtn.disabled=true;});
-  setPhase("idle");
-})();
-</script>
+        <!-- OVERLAY AL ARRASTRAR ARCHIVOS SOBRE EL LIENZO -->
+        <div id="dropzone-overlay" class="hidden absolute inset-0 z-[100] border-8 border-dashed border-amber-400 rounded-3xl m-6 flex flex-col items-center justify-center text-white pointer-events-none">
+            <div class="text-8xl mb-6">📂✨</div>
+            <h2 class="text-6xl font-extrabold text-amber-300 mb-4">Suelta tus archivos aquí</h2>
+            <p class="text-3xl text-purple-200 max-w-3xl text-center">
+                Puedes soltar juntos <code class="text-white font-bold">Cilindro-1.png</code>, <code class="text-white font-bold">Botón-play-audio.png</code>, <code class="text-white font-bold">Referencia.jpg</code> y los <code class="text-white font-bold">8 archivos de audio</code>. Se asignarán automáticamente.
+            </p>
+        </div>
+
+        <!-- 1. CAPA DE FONDO VECTORIAL FIEL A LA REFERENCIA -->
+        <svg id="vector-background" viewBox="0 0 1980 1920" width="1980" height="1920" class="absolute inset-0 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Sombra sutil para elementos blancos -->
+                <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#2c126f" flood-opacity="0.38"/>
+                </filter>
+
+                <!-- Definición de estrella dibujada a mano de 6 puntas estilo referencia -->
+                <g id="star6">
+                    <path d="M 0,-26 C 2,-8 2,8 0,26 M -24,-13 C -7,-4 7,4 24,13 M -24,13 C -7,4 7,-4 24,-13" 
+                          stroke="#B18CFF" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+                </g>
+                <g id="star6-sm">
+                    <path d="M 0,-16 C 1,-5 1,5 0,16 M -15,-8 C -5,-3 5,3 15,8 M -15,8 C -5,3 5,-3 15,-8" 
+                          stroke="#B18CFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+                </g>
+            </defs>
+
+            <!-- Fondo base morado -->
+            <rect id="base-purple-rect" width="1980" height="1920" fill="#7145D6" />
+
+            <!-- MARCO EXTERIOR DE DOBLE LÍNEA CON ESQUINAS ESCALONADAS CURVAS (Idéntico a Referencia.jpg) -->
+            <g fill="none" stroke="#8E65EA" stroke-linecap="round" stroke-linejoin="round" opacity="0.88">
+                <!-- Trazo exterior del marco grande -->
+                <path stroke-width="7" d="
+                    M 680,12 
+                    L 1300,12
+                    C 1490,12 1625,75 1625,185
+                    L 1625,310
+                    C 1625,365 1665,395 1735,412
+                    C 1845,440 1900,520 1900,645
+                    L 1900,1275
+                    C 1900,1400 1845,1480 1735,1508
+                    C 1665,1525 1625,1555 1625,1610
+                    L 1625,1735
+                    C 1625,1845 1490,1908 1300,1908
+                    L 680,1908
+                    C 490,1908 355,1845 355,1735
+                    L 355,1610
+                    C 355,1555 315,1525 245,1508
+                    C 135,1480 80,1400 80,1275
+                    L 80,645
+                    C 80,520 135,440 245,412
+                    C 315,395 355,365 355,310
+                    L 355,185
+                    C 355,75 490,12 680,12 Z" />
+
+                <!-- Trazo interior paralelo del marco grande -->
+                <path stroke-width="5" d="
+                    M 690,34 
+                    L 1290,34
+                    C 1465,34 1598,92 1598,192
+                    L 1598,318
+                    C 1598,382 1642,414 1718,434
+                    C 1820,460 1872,534 1872,652
+                    L 1872,1268
+                    C 1872,1386 1820,1460 1718,1486
+                    C 1642,1506 1598,1538 1598,1602
+                    L 1598,1728
+                    C 1598,1828 1465,1886 1290,1886
+                    L 690,1886
+                    C 515,1886 382,1828 382,1728
+                    L 382,1602
+                    C 382,1538 338,1506 262,1486
+                    C 160,1460 108,1386 108,1268
+                    L 108,652
+                    C 108,534 160,460 262,434
+                    C 338,414 382,382 382,318
+                    L 382,192
+                    C 382,92 515,34 690,34 Z" />
+            </g>
+
+            <!-- MARCO CENTRAL INTERNO DE DOBLE LÍNEA (Rodea los 8 cilindros dorados) -->
+            <g fill="none" stroke="#8E65EA" stroke-linecap="round" stroke-linejoin="round" opacity="0.82">
+                <path stroke-width="6.5" d="
+                    M 760,225
+                    L 1220,225
+                    C 1375,225 1475,280 1475,380
+                    L 1475,500
+                    C 1475,555 1515,585 1575,605
+                    C 1665,635 1705,700 1705,805
+                    L 1705,1125
+                    C 1705,1230 1665,1295 1575,1325
+                    C 1515,1345 1475,1375 1475,1430
+                    L 1475,1500
+                    C 1475,1595 1375,1650 1220,1650
+                    L 760,1650
+                    C 605,1650 505,1595 505,1500
+                    L 505,1430
+                    C 505,1375 465,1345 405,1325
+                    C 315,1295 275,1230 275,1125
+                    L 275,805
+                    C 275,700 315,635 405,605
+                    C 465,585 505,555 505,500
+                    L 505,380
+                    C 505,280 605,225 760,225 Z" />
+
+                <path stroke-width="4.5" d="
+                    M 770,247
+                    L 1210,247
+                    C 1355,247 1450,295 1450,388
+                    L 1450,506
+                    C 1450,568 1494,600 1558,622
+                    C 1640,650 1678,710 1678,812
+                    L 1678,1118
+                    C 1678,1220 1640,1280 1558,1308
+                    C 1494,1330 1450,1362 1450,1424
+                    L 1450,1492
+                    C 1450,1585 1355,1628 1210,1628
+                    L 770,1628
+                    C 625,1628 530,1585 530,1492
+                    L 530,1424
+                    C 530,1362 486,1330 422,1308
+                    C 340,1280 302,1220 302,1118
+                    L 302,812
+                    C 302,710 340,650 422,622
+                    C 486,600 530,568 530,506
+                    L 530,388
+                    C 530,295 625,247 770,247 Z" />
+            </g>
+
+            <!-- DESTELLOS, ESTRELLAS DE 6 PUNTAS Y CÍRCULOS DECORATIVOS (Posicionados según Referencia.jpg) -->
+            <g opacity="0.82">
+                <!-- Lado Izquierdo -->
+                <use href="#star6" x="85" y="102" class="bg-sparkle" style="animation-delay: 0.2s"/>
+                <use href="#star6" x="115" y="380" class="bg-sparkle" style="animation-delay: 1.1s; transform: scale(1.25)"/>
+                <use href="#star6" x="155" y="925" class="bg-sparkle" style="animation-delay: 2.3s; transform: scale(0.95)"/>
+                <use href="#star6" x="112" y="1215" class="bg-sparkle" style="animation-delay: 0.7s"/>
+                <use href="#star6-sm" x="315" y="1405" class="bg-sparkle" style="animation-delay: 1.8s"/>
+                <use href="#star6" x="165" y="1605" class="bg-sparkle" style="animation-delay: 2.9s; transform: scale(1.1)"/>
+                <use href="#star6-sm" x="462" y="1728" class="bg-sparkle" style="animation-delay: 0.5s"/>
+
+                <!-- Lado Derecho y Centro -->
+                <use href="#star6-sm" x="1200" y="38" class="bg-sparkle" style="animation-delay: 1.4s"/>
+                <use href="#star6" x="1912" y="34" class="bg-sparkle" style="animation-delay: 0.9s; transform: scale(1.25)"/>
+                <use href="#star6" x="1905" y="295" class="bg-sparkle" style="animation-delay: 2.1s; transform: scale(1.15)"/>
+                <use href="#star6-sm" x="1905" y="485" class="bg-sparkle" style="animation-delay: 0.3s"/>
+                <use href="#star6" x="1765" y="655" class="bg-sparkle" style="animation-delay: 1.7s; transform: scale(1.35)"/>
+                <use href="#star6" x="1845" y="1038" class="bg-sparkle" style="animation-delay: 2.5s; transform: scale(0.95)"/>
+                <use href="#star6" x="1825" y="1352" class="bg-sparkle" style="animation-delay: 1.2s; transform: scale(1.1)"/>
+                <use href="#star6" x="1645" y="1618" class="bg-sparkle" style="animation-delay: 0.6s; transform: scale(1.1)"/>
+                <use href="#star6" x="1182" y="1748" class="bg-sparkle" style="animation-delay: 2.0s; transform: scale(1.15)"/>
+                <use href="#star6" x="1815" y="1825" class="bg-sparkle" style="animation-delay: 1.5s; transform: scale(1.15)"/>
+
+                <!-- Círculos y anillos lilas esparcidos -->
+                <circle cx="412" cy="36" r="22" fill="#A580F8" opacity="0.75"/>
+                <circle cx="612" cy="94" r="10" stroke="#B18CFF" stroke-width="5" fill="none"/>
+                <circle cx="950" cy="24" r="14" stroke="#B18CFF" stroke-width="6" fill="none"/>
+                <circle cx="318" cy="144" r="12" stroke="#B18CFF" stroke-width="5" fill="none"/>
+                <circle cx="178" cy="245" r="16" stroke="#B18CFF" stroke-width="6.5" fill="none"/>
+                <circle cx="1725" cy="184" r="16" fill="#A580F8" opacity="0.75"/>
+                <circle cx="264" cy="596" r="17" stroke="#B18CFF" stroke-width="7" fill="none"/>
+                <circle cx="84" cy="726" r="14" fill="#A580F8" opacity="0.75"/>
+                <circle cx="246" cy="988" r="10" stroke="#B18CFF" stroke-width="5" fill="none"/>
+                <circle cx="1685" cy="1128" r="9" stroke="#B18CFF" stroke-width="4.5" fill="none"/>
+                <circle cx="1960" cy="1245" r="12" stroke="#B18CFF" stroke-width="5" fill="none"/>
+                <circle cx="14" cy="1495" r="16" fill="#A580F8" opacity="0.75"/>
+                <circle cx="1905" cy="1595" r="16" stroke="#B18CFF" stroke-width="6" fill="none"/>
+                <circle cx="1528" cy="1736" r="9" fill="#A580F8" opacity="0.8"/>
+                <circle cx="222" cy="1792" r="13" stroke="#B18CFF" stroke-width="5.5" fill="none"/>
+                <circle cx="655" cy="1868" r="11" fill="#A580F8" opacity="0.75"/>
+                <circle cx="950" cy="1882" r="10" stroke="#B18CFF" stroke-width="4.5" fill="none"/>
+                <circle cx="1115" cy="1884" r="11" fill="#A580F8" opacity="0.75"/>
+                <circle cx="1560" cy="1876" r="11" stroke="#B18CFF" stroke-width="5" fill="none"/>
+            </g>
+
+            <!-- ESFERA SUPERIOR COLGANTE CON LAZO BLANCO E ISOTIPO "D" DE DA-GAS -->
+            <g id="top-medallion" filter="url(#softShadow)">
+                <!-- Hilo vertical desde el borde superior -->
+                <line x1="990" y1="0" x2="990" y2="148" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round"/>
+                <!-- Lazo blanco minimalista -->
+                <path d="M 990,115 
+                         C 925,60 830,68 835,104 
+                         C 840,136 930,126 990,115 Z" 
+                      stroke="#FFFFFF" stroke-width="6.5" fill="none" stroke-linejoin="round"/>
+                <path d="M 990,115 
+                         C 1055,60 1150,68 1145,104 
+                         C 1140,136 1050,126 990,115 Z" 
+                      stroke="#FFFFFF" stroke-width="6.5" fill="none" stroke-linejoin="round"/>
+                <!-- Cintas caídas del lazo -->
+                <path d="M 990,115 C 955,126 912,140 878,152" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+                <path d="M 990,115 C 1025,126 1068,140 1102,152" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+
+                <!-- Círculo blanco principal -->
+                <circle cx="990" cy="264" r="118" fill="#FFFFFF"/>
+
+                <!-- Isotipo "D" estilizado de Da-Gas en morado dentro de la esfera -->
+                <g transform="translate(990, 266) scale(1.22)">
+                    <!-- Forma exterior de la D con ala dinámica -->
+                    <path d="M -68,-26 
+                             L 18,-44 
+                             C 48,-48 65,-28 60,2 
+                             C 54,32 24,52 -15,58 
+                             L -42,60 
+                             L -24,-10 
+                             L -55,-8 Z" 
+                          fill="none" stroke="#7145D6" stroke-width="7.5" stroke-linejoin="round"/>
+                    <!-- Sombra / relleno interior del logo D -->
+                    <path d="M -22,-18 
+                             L 14,-25 
+                             C 30,-27 38,-14 34,4 
+                             C 30,22 14,34 -8,38 
+                             L -20,39 
+                             L -8,-8 
+                             L -36,-6 Z" 
+                          fill="#7145D6"/>
+                    <!-- Barras de velocidad horizontales derechas de la D -->
+                    <path d="M 18,-6 L 68,-15 L 65,2 L 14,11 Z" fill="#FFFFFF" stroke="#7145D6" stroke-width="5" stroke-linejoin="round"/>
+                    <line x1="24" y1="2" x2="58" y2="-4" stroke="#7145D6" stroke-width="4.5" stroke-linecap="round"/>
+                </g>
+            </g>
+        </svg>
+
+        <!-- 2. BARRA SUPERIOR FLOTANTE DE CONTROLES Y MODO DE JUEGO (Discreta y ocultable para Kiosco) -->
+        <div id="top-hud" class="absolute top-6 left-8 right-8 flex items-center justify-between z-50 pointer-events-auto">
+            <!-- Selector de Modo: Explorar Libre vs Juego Adivina el Tintineo -->
+            <div class="hud-glass rounded-full p-2 flex items-center gap-2 shadow-2xl">
+                <button id="btn-mode-free" onclick="setGameMode('free')" class="px-6 py-3 rounded-full text-xl font-bold transition-all bg-white text-purple-900 shadow-md">
+                    🔔 Modo Libre (8 Sonidos)
+                </button>
+                <button id="btn-mode-quiz" onclick="setGameMode('quiz')" class="px-6 py-3 rounded-full text-xl font-bold transition-all text-white hover:bg-white/15">
+                    🎯 Juego: ¡Adivina el Tintineo!
+                </button>
+            </div>
+
+            <!-- Panel central de estado cuando está en Modo Juego -->
+            <div id="quiz-hud" class="hidden hud-glass rounded-full px-8 py-3 items-center gap-6 text-white shadow-2xl">
+                <div class="flex items-center gap-2 text-2xl font-bold">
+                    <span>⭐ Puntos:</span>
+                    <span id="quiz-score" class="text-yellow-300 text-3xl">0</span>
+                </div>
+                <div class="h-7 w-0.5 bg-white/25"></div>
+                <div id="quiz-prompt" class="text-xl font-semibold text-purple-100">
+                    Escucha el cilindro blanco y adivina cuál es...
+                </div>
+                <button onclick="playQuizTargetSound()" class="px-5 py-2 rounded-full bg-yellow-400 hover:bg-yellow-300 text-purple-950 font-bold text-lg shadow transition">
+                    🔊 Repetir Sonido (4s)
+            <!-- Botones de Vista (Ajustar vs 1980x1920 1:1) y Carga Rápida de Archivos -->
+            <div class="hud-glass rounded-full p-2 flex items-center gap-2 shadow-2xl">
+                <label class="px-5 py-3 rounded-full text-lg font-extrabold bg-emerald-400 hover:bg-emerald-300 text-purple-950 transition shadow cursor-pointer flex items-center gap-2" title="Selecciona todos tus archivos juntos (Cilindro-1.png, Botón-play-audio.png y los 8 audios)">
+                    📂 Cargar Archivos (Lote)
+                    <input type="file" id="batch-files-input" multiple accept="image/*,audio/*" class="hidden" onchange="handleBatchFilesUpload(event)">
+                </label>
+                <button id="btn-scale-toggle" onclick="toggleScaleMode()" class="px-5 py-3 rounded-full text-lg font-semibold text-white hover:bg-white/15 transition" title="Alternar entre Ajuste Automático y Tamaño Real 1980x1920px">
+                    📐 Vista: Ajustada
+                </button>
+                <button onclick="toggleConfigModal(true)" class="px-5 py-3 rounded-full text-lg font-semibold bg-amber-400 hover:bg-amber-300 text-purple-950 transition shadow">
+                    ⚙️ Configurar (8)
+                </button>
+                <button onclick="toggleHudVisibility()" class="px-4 py-3 rounded-full text-lg font-semibold text-white/80 hover:text-white hover:bg-white/15 transition" title="Modo Kiosco Limpio (Ocultar barra)">
+                    👁️
+                </button>
+            </div>
+        </div>
+
+        <!-- Botón flotante mini para restaurar HUD si se oculta en modo Kiosco -->
+        <button id="btn-restore-hud" onclick="toggleHudVisibility()" class="hidden absolute top-5 right-5 z-50 w-14 h-14 rounded-full hud-glass text-white flex items-center justify-center text-2xl opacity-35 hover:opacity-100 transition" title="Mostrar controles">
+            ⚙️
+        </button>
+
+        <!-- 3. PLANTILLA SVG OCULTA DE ALTA DEFINICIÓN PARA EL CILINDRO DORADO CON LAZO NAVIDEÑO -->
+        <svg class="hidden" aria-hidden="true">
+            <defs>
+                <!-- Gradiente metálico realista 3D para el cuerpo del cilindro de gas dorado -->
+                <linearGradient id="goldCylinderBody" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#8C5206"/>
+                    <stop offset="12%" stop-color="#D38E1B"/>
+                    <stop offset="28%" stop-color="#FCE47C"/>
+                    <stop offset="42%" stop-color="#FFF9C4"/>
+                    <stop offset="56%" stop-color="#E5A624"/>
+                    <stop offset="72%" stop-color="#9B5E08"/>
+                    <stop offset="88%" stop-color="#F7D056"/>
+                    <stop offset="100%" stop-color="#6E3B02"/>
+                </linearGradient>
+
+                <!-- Gradiente vertical para brillo curvo superior e inferior del tanque -->
+                <linearGradient id="goldVerticalSheen" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#FFF6A9" stop-opacity="0.65"/>
+                    <stop offset="22%" stop-color="#DDA01E" stop-opacity="0.1"/>
+                    <stop offset="50%" stop-color="#582E02" stop-opacity="0.3"/>
+                    <stop offset="80%" stop-color="#FFF296" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#5E3001" stop-opacity="0.6"/>
+                </linearGradient>
+
+                <!-- Gradiente de listón/moño dorado texturizado -->
+                <linearGradient id="goldRibbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#B97B19"/>
+                    <stop offset="30%" stop-color="#F9DC78"/>
+                    <stop offset="50%" stop-color="#D79626"/>
+                    <stop offset="75%" stop-color="#FFECA6"/>
+                    <stop offset="100%" stop-color="#8F5508"/>
+                </linearGradient>
+
+                <linearGradient id="goldRibbonDark" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#6F3D04"/>
+                    <stop offset="50%" stop-color="#B67716"/>
+                    <stop offset="100%" stop-color="#5E3202"/>
+                </linearGradient>
+
+                <!-- Patrón de brillo diamantina sutil para el moño -->
+                <pattern id="ribbonMesh" width="8" height="8" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1" fill="#FFF8C9" opacity="0.45"/>
+                    <circle cx="6" cy="6" r="1.2" fill="#854D06" opacity="0.35"/>
+                </pattern>
+
+                <!-- Símbolo reutilizable del Cilindro Dorado Completo (Moño + Listón + Tanque Da-Gas) -->
+                <g id="golden-cylinder-ornament">
+                    <!-- Cinta vertical superior de la que cuelga -->
+                    <rect x="174" y="0" width="32" height="106" rx="3" fill="url(#goldRibbonGrad)" stroke="#9A600D" stroke-width="2"/>
+                    <rect x="174" y="0" width="32" height="106" rx="3" fill="url(#ribbonMesh)"/>
+                    <line x1="179" y1="2" x2="179" y2="104" stroke="#FFF4B8" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+                    <line x1="201" y1="2" x2="201" y2="104" stroke="#FFF4B8" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+
+                    <!-- Colas inferiores del moño (izquierda y derecha con corte en V) -->
+                    <path d="M 168,108 L 52,202 L 88,204 L 98,234 L 184,132 Z" fill="url(#goldRibbonGrad)" stroke="#9A600D" stroke-width="2"/>
+                    <path d="M 168,108 L 52,202 L 88,204 L 98,234 L 184,132 Z" fill="url(#ribbonMesh)"/>
+
+                    <path d="M 212,108 L 328,202 L 292,204 L 282,234 L 196,132 Z" fill="url(#goldRibbonGrad)" stroke="#9A600D" stroke-width="2"/>
+                    <path d="M 212,108 L 328,202 L 292,204 L 282,234 L 196,132 Z" fill="url(#ribbonMesh)"/>
+
+                    <!-- Interior oscuro de los lazos del moño para dar volumen 3D -->
+                    <path d="M 175,98 C 120,42 54,58 58,96 C 62,125 128,125 175,112 Z" fill="url(#goldRibbonDark)"/>
+                    <path d="M 205,98 C 260,42 326,58 322,96 C 318,125 252,125 205,112 Z" fill="url(#goldRibbonDark)"/>
+
+                    <!-- Lazos principales del moño (Izquierdo y Derecho) -->
+                    <path d="M 178,105 
+                             C 122,42 42,68 48,122 
+                             C 54,172 132,148 180,118 Z" 
+                          fill="url(#goldRibbonGrad)" stroke="#A56810" stroke-width="2.2"/>
+                    <path d="M 178,105 C 122,42 42,68 48,122 C 54,172 132,148 180,118 Z" fill="url(#ribbonMesh)"/>
+                    <!-- Pliegues de luz en el lazo izquierdo -->
+                    <path d="M 168,108 C 130,90 88,95 68,116" stroke="#7E4805" stroke-width="3" fill="none" opacity="0.55"/>
+                    <path d="M 165,114 C 125,112 90,122 72,135" stroke="#FFF6B3" stroke-width="2.5" fill="none" opacity="0.7"/>
+
+                    <path d="M 202,105 
+                             C 258,42 338,68 332,122 
+                             C 326,172 248,148 200,118 Z" 
+                          fill="url(#goldRibbonGrad)" stroke="#A56810" stroke-width="2.2"/>
+                    <path d="M 202,105 C 258,42 338,68 332,122 C 326,172 248,148 200,118 Z" fill="url(#ribbonMesh)"/>
+                    <!-- Pliegues de luz en el lazo derecho -->
+                    <path d="M 212,108 C 250,90 292,95 312,116" stroke="#7E4805" stroke-width="3" fill="none" opacity="0.55"/>
+                    <path d="M 215,114 C 255,112 290,122 308,135" stroke="#FFF6B3" stroke-width="2.5" fill="none" opacity="0.7"/>
+
+                    <!-- Nudo central del moño -->
+                    <rect x="171" y="92" width="38" height="36" rx="11" fill="url(#goldRibbonGrad)" stroke="#885006" stroke-width="2.2"/>
+                    <rect x="171" y="92" width="38" height="36" rx="11" fill="url(#ribbonMesh)"/>
+
+                    <!-- Argolla metálica dorada que sujeta el cilindro -->
+                    <circle cx="190" cy="145" r="13" fill="none" stroke="url(#goldCylinderBody)" stroke-width="6"/>
+                    <circle cx="190" cy="158" r="9" fill="none" stroke="url(#goldCylinderBody)" stroke-width="5"/>
+
+                    <!-- === CILINDRO DE GAS DORADO METÁLICO === -->
+                    <!-- Cuello protector superior (válvula/asa del cilindro) -->
+                    <path d="M 142,172 
+                             C 142,163 152,158 190,158 
+                             C 228,158 238,163 238,172 
+                             L 242,216 
+                             L 138,216 Z" 
+                          fill="url(#goldCylinderBody)" stroke="#734104" stroke-width="2"/>
+                    <!-- Aberturas del cuello protector como en la foto -->
+                    <rect x="155" y="174" width="16" height="26" rx="4" fill="#462501"/>
+                    <rect x="209" y="174" width="16" height="26" rx="4" fill="#462501"/>
+                    <!-- Válvula central interior -->
+                    <rect x="182" y="170" width="16" height="32" rx="3" fill="url(#goldRibbonGrad)" stroke="#552D01" stroke-width="1.5"/>
+
+                    <!-- Cuerpo principal del cilindro de gas -->
+                    <rect x="108" y="212" width="164" height="154" rx="44" fill="url(#goldCylinderBody)" stroke="#7A4405" stroke-width="2.5"/>
+                    <rect x="108" y="212" width="164" height="154" rx="44" fill="url(#goldVerticalSheen)"/>
+
+                    <!-- Reflejos especulares intensos de metal pulido -->
+                    <rect x="144" y="220" width="22" height="138" rx="11" fill="#FFFFFF" opacity="0.52"/>
+                    <rect x="126" y="226" width="8" height="126" rx="4" fill="#FFF7B2" opacity="0.38"/>
+
+                    <!-- Anillo/costura horizontal central de soldadura del tanque -->
+                    <path d="M 103,289 L 277,289" stroke="#6B3A02" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M 104,287 L 276,287" stroke="#FFF3A1" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+
+                    <!-- Base / aro inferior de soporte del cilindro -->
+                    <path d="M 136,363 L 244,363 L 240,390 C 240,396 220,400 190,400 C 160,400 140,396 140,390 Z" 
+                          fill="url(#goldCylinderBody)" stroke="#6B3A02" stroke-width="2.2"/>
+                    <ellipse cx="190" cy="364" rx="58" ry="5" fill="#582E01" opacity="0.65"/>
+
+                    <!-- LOGO "D / DA-GAS" GRABADO EN EL CENTRO DEL CILINDRO DORADO -->
+                    <g transform="translate(190, 282)">
+                        <!-- Isotipo D en tono bronce/negro oscuro metálico -->
+                        <path d="M -38,-22 
+                                 L 12,-32 
+                                 C 30,-34 40,-21 36,-3 
+                                 C 32,15 14,26 -10,30 
+                                 L -25,31 
+                                 L -14,-11 
+                                 L -32,-10 Z" 
+                              fill="#241302" stroke="#FFF2A6" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M -8,-16 L 10,-20 C 19,-21 24,-13 21,-2 C 18,9 9,16 -4,18 L -11,19 L -4,-9 L -18,-8 Z" 
+                              fill="#E6A928"/>
+                        <path d="M 10,-6 L 42,-12 L 40,-1 L 8,5 Z" fill="#241302" stroke="#FFF2A6" stroke-width="1.2"/>
+                        <!-- Texto DA-GAS -->
+                        <text x="0" y="50" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="22" letter-spacing="1.5" fill="#241302" stroke="#FCE588" stroke-width="0.6">DA-GAS</text>
+                    </g>
+                </g>
+            </defs>
+        </svg>
+
+        <!-- 4. CUADRÍCULA DE LOS 8 CILINDROS DORADOS INTERACTIVOS (2 Arriba, 3 Medio, 3 Abajo como en Referencia.jpg) -->
+        <div id="cylinders-container" class="absolute inset-0 pointer-events-none z-20">
+            <!-- Los 8 cilindros se renderizan dinámicamente con sus coordenadas exactas en el lienzo 1980x1920 -->
+        </div>
+
+        <!-- 5. TÍTULO PRINCIPAL "El tintineo de Da-Gas" -->
+        <div class="absolute left-0 right-0 top-[1485px] text-center pointer-events-none z-20">
+            <h1 class="title-serif text-[84px] leading-none tracking-tight select-none">
+                El tintineo de Da-Gas
+            </h1>
+            <!-- Subtítulo dinámico que muestra qué tintineo está sonando y su cuenta regresiva de 4.0s -->
+            <div id="now-playing-banner" class="mt-3 inline-flex items-center gap-3 px-7 py-2 rounded-full bg-purple-950/65 border border-purple-300/35 text-purple-100 text-2xl font-semibold opacity-0 transition-opacity duration-300">
+                <span id="now-playing-name">🎵 Selecciona un cilindro dorado</span>
+                <span id="now-playing-timer" class="text-yellow-300 font-bold tabular-nums">4.0s</span>
+            </div>
+        </div>
+
+        <!-- 6. BOTÓN PLAY AUDIO INFERIOR (Usa Botón-play-audio.png + Ecualizador Animado) -->
+        <div id="bottom-speaker-wrapper" 
+             onclick="handleBottomSpeakerClick()"
+             title="Haz clic para reproducir el audio del juego o repetir el tintineo de 4 segundos"
+             class="absolute left-1/2 top-[1748px] -translate-x-1/2 -translate-y-1/2 w-[260px] h-[340px] flex items-center justify-center cursor-pointer z-30 group">
+            
+            <!-- Anillos de onda sonora cuando está sonando uno de los 8 audios de 4 segundos -->
+            <div class="sound-wave-ring ring-1"></div>
+            <div class="sound-wave-ring ring-2"></div>
+            <div class="sound-wave-ring ring-3"></div>
+
+            <!-- Imagen oficial Botón-play-audio.png (se muestra automáticamente si carga desde la carpeta o por lote) -->
+            <img id="custom-speaker-img" 
+                 src="Botón-play-audio.png" 
+                 alt="Botón Play Audio Da-Gas"
+                 class="hidden w-[184px] h-[288px] object-contain transition-transform duration-300 group-hover:scale-105 select-none pointer-events-none"
+                 onload="handleSpeakerImgLoaded()"
+                 onerror="tryAlternativeSpeakerImg(this)" />
+
+            <!-- Silueta idéntica de respaldo con Ecualizador Dinámico integrado -->
+            <div id="fallback-speaker-svg" class="relative w-[178px] h-[276px] flex flex-col items-center transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_12px_25px_rgba(32,10,80,0.45)]">
+                <!-- SVG de la silueta blanca del tanque de gas idéntica a Botón-play-audio.png -->
+                <svg viewBox="0 0 200 310" class="w-full h-full overflow-visible">
+                    <path d="M 52,18 
+                             C 52,6 70,0 100,0 
+                             C 130,0 148,6 148,18 
+                             L 148,58 
+                             L 52,58 Z" 
+                          fill="#FFFFFF"/>
+                    <path d="M 52,54 
+                             C 24,58 8,82 8,115 
+                             L 8,215 
+                             C 8,248 24,268 42,276 
+                             L 38,294 
+                             C 38,304 58,310 100,310 
+                             C 142,310 162,304 162,294 
+                             L 158,276 
+                             C 176,268 192,248 192,215 
+                             L 192,115 
+                             C 192,82 176,58 148,54 Z" 
+                          fill="#FFFFFF"/>
+
+                    <!-- Logo "D" morado superior idéntico a Botón-play-audio.png -->
+                    <g transform="translate(100, 34) scale(0.32)">
+                        <path d="M -68,-26 L 18,-44 C 48,-48 65,-28 60,2 C 54,32 24,52 -15,58 L -42,60 L -24,-10 L -55,-8 Z" 
+                              fill="none" stroke="#7145D6" stroke-width="10" stroke-linejoin="round"/>
+                        <path d="M -22,-18 L 14,-25 C 30,-27 38,-14 34,4 C 30,22 14,34 -8,38 L -20,39 L -8,-8 L -36,-6 Z" 
+                              fill="#7145D6"/>
+                        <path d="M 18,-6 L 68,-15 L 65,2 L 14,11 Z" fill="#FFFFFF" stroke="#7145D6" stroke-width="7"/>
+                    </g>
+                </svg>
+
+                <!-- 15 Barras horizontales moradas del ecualizador ovalado dentro del cilindro blanco -->
+                <div id="equalizer-bars" class="absolute top-[86px] w-[96px] h-[138px] flex flex-col items-center justify-between py-1 pointer-events-none">
+                </div>
+            </div>
+
+            <!-- Barra lineal de progreso de 4.0 segundos debajo del botón -->
+            <div class="absolute bottom-[6px] w-[96px] h-[7px] bg-purple-950/40 rounded-full overflow-hidden pointer-events-none">
+                <div id="speaker-progress-bar" class="h-full w-0 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 transition-none"></div>
+            </div>
+        </div>
+
+        <!-- 7. CANVAS DE PARTÍCULAS Y DESTELLOS DORADOS -->
+        <canvas id="particles-canvas" width="1980" height="1920"></canvas>
+
+        <!-- 8. MODAL DE CONFIGURACIÓN PARA SUBIR EN LOTE O INDIVIDUALMENTE LOS ARCHIVOS -->
+        <div id="config-modal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-10">
+            <div class="bg-[#23124b] border-2 border-purple-400/40 rounded-3xl max-w-6xl w-full max-h-[1680px] overflow-y-auto p-10 text-white shadow-2xl">
+                <div class="flex items-center justify-between border-b border-purple-400/30 pb-6 mb-6">
+                    <div>
+                        <h2 class="text-4xl font-bold text-amber-300">⚙️ Gestor de Archivos de "El tintineo de Da-Gas" (1980×1920 px)</h2>
+                        <p class="text-purple-200 text-xl mt-1">
+                            Compatible con tus archivos <code class="text-amber-300">Cilindro-1.png</code>, <code class="text-amber-300">Botón-play-audio.png</code>, <code class="text-amber-300">Referencia.jpg</code> y tus <strong>8 audios de 4 segundos</strong>.
+                        </p>
+                    </div>
+                    <button onclick="toggleConfigModal(false)" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-3xl flex items-center justify-center">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- CARGA EN LOTE DE TODOS LOS ARCHIVOS JUNTOS -->
+                <div class="bg-gradient-to-r from-emerald-900/50 to-purple-900/60 border-2 border-emerald-400/50 rounded-2xl p-6 mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-2xl font-extrabold text-emerald-300 flex items-center gap-2">
+                            ⚡ Carga Rápida Inteligente (Selecciona todos tus archivos a la vez)
+                        </h3>
+                        <p class="text-purple-100 text-lg mt-1">
+                            Selecciona o arrastra tus 8 audios (<code class="text-amber-200">.wav / .mp3</code>) junto con <code class="text-amber-200">Cilindro-1.png</code> y <code class="text-amber-200">Botón-play-audio.png</code>. El sistema los reconoce y asigna automáticamente.
+                        </p>
+                    </div>
+                    <label class="px-8 py-4 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-purple-950 font-extrabold text-xl cursor-pointer transition shadow-xl shrink-0">
+                        📂 Seleccionar Todos los Archivos...
+                        <input type="file" multiple accept="image/*,audio/*" class="hidden" onchange="handleBatchFilesUpload(event)">
+                    </label>
+                </div>
+
+                <!-- Sección 1: Imágenes Principales (Cilindro-1.png, Botón-play-audio.png y Fondo) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Cilindro-1.png para los 8 adornos -->
+                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xl font-bold text-amber-300 mb-1">1. Imagen de los 8 Cilindros</h4>
+                            <p class="text-purple-200 text-sm mb-3">Archivo esperado: <code class="text-white">Cilindro-1.png</code> (se aplica a los 8 cilindros de la cuadrícula).</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-bold text-base cursor-pointer transition">
+                                🖼️ Subir Cilindro-1.png
+                                <input type="file" accept="image/*" class="hidden" onchange="handleSharedCylinderImageUpload(event)">
+                            </label>
+                            <span id="status-cilindro-img" class="text-xs text-purple-300">Auto / Vector HD</span>
+                        </div>
+                    </div>
+
+                    <!-- Botón-play-audio.png -->
+                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xl font-bold text-amber-300 mb-1">2. Botón Play Audio Inferior</h4>
+                            <p class="text-purple-200 text-sm mb-3">Archivo esperado: <code class="text-white">Botón-play-audio.png</code> (cilindro blanco con ondas moradas).</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-bold text-base cursor-pointer transition">
+                                🖼️ Subir Botón-play-audio.png
+                                <input type="file" accept="image/*" class="hidden" onchange="handleSpeakerImageUpload(event)">
+                            </label>
+                            <span id="status-speaker-img" class="text-xs text-purple-300">Auto / Ecualizador HD</span>
+                        </div>
+                    </div>
+
+                    <!-- Imagen de Fondo Referencia.jpg -->
+                    <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xl font-bold text-amber-300 mb-1">3. Fondo 1980×1920 px</h4>
+                            <p class="text-purple-200 text-sm mb-3">Usa el fondo vectorial limpio o sube <code class="text-white">Referencia.jpg</code> directamente.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-base cursor-pointer transition">
+                                🖼️ Subir Fondo
+                                <input type="file" accept="image/*" class="hidden" onchange="handleBackgroundUpload(event)">
+                            </label>
+                            <button onclick="resetCustomBackground()" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold">
+                                Restaurar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Los 8 Cilindros y sus 8 Sonidos de 4 segundos -->
+                <div class="bg-purple-950/60 border border-purple-400/25 rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold flex items-center gap-2">
+                                <span>🔔</span> Los 8 Sonidos de 4.0 Segundos (Uno por cada Cilindro Dorado)
+                            </h3>
+                            <p class="text-purple-200 text-base">
+                                Preconfigurados con los 8 tonos de campana de 4 segundos que compartiste (Do5 a Do6) y listos para cargar tus archivos <code class="text-amber-300">.wav / .mp3</code>.
+                            </p>
+                        </div>
+                        <button onclick="resetAllCustomAssets()" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-200 text-base font-semibold transition">
+                            Restablecer valores por defecto
+                        </button>
+                    </div>
+
+                    <div id="config-slots-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Generado dinámicamente por JS para los 8 cilindros -->
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button onclick="toggleConfigModal(false)" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-300 text-purple-950 font-extrabold text-2xl shadow-lg hover:brightness-105 transition">
+                        ¡Listo, Volver al Juego!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /*************************************************************************
+         * CONFIGURACIÓN DE LOS 8 CILINDROS (`Cilindro-1.png`) Y LOS 8 SONIDOS DE 4 SEGUNDOS
+         * Incluye soporte nativo para los 8 tonos de campana de 4.0s enviados por el usuario:
+         *   Audio 1: Do (C5 - 523.25 Hz)
+         *   Audio 2: Re (D5 - 587.33 Hz)
+         *   Audio 3: Mi (E5 - 659.25 Hz)
+         *   Audio 4: Fa (F5 - 698.46 Hz)
+         *   Audio 5: Sol (G5 - 783.99 Hz)
+         *   Audio 6: La (A5 - 880.00 Hz)
+         *   Audio 7: Si (B5 - 987.77 Hz)
+         *   Audio 8: Do agudo (C6 - 1046.50 Hz)
+         *************************************************************************/
+        const SOUND_DURATION = 4.0; // Exactamente 4.0 segundos cada sonido
+
+        // Imagen compartida si Cilindro-1.png está disponible en la misma carpeta o es cargada por el usuario
+        let sharedCylinderImgUrl = null;
+        let sharedCylinderImgLoaded = false;
+
+        const CYLINDERS_DATA = [
+            // FILA 1 (Superior - 2 cilindros)
+            {
+                id: 1,
+                name: "Cilindro 1 · Tintineo Do (C5)",
+                row: 1,
+                x: 722,
+                y: 282,
+                defaultAudioFiles: ["Audio-1.wav", "Audio-1.mp3", "Sonido-1.wav", "Sonido-1.mp3", "1.wav", "1.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 523.25 // C5 - Idéntico al Audio 1 adjunto
+            },
+            {
+                id: 2,
+                name: "Cilindro 2 · Tintineo Re (D5)",
+                row: 1,
+                x: 1258,
+                y: 282,
+                defaultAudioFiles: ["Audio-2.wav", "Audio-2.mp3", "Sonido-2.wav", "Sonido-2.mp3", "2.wav", "2.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 587.33 // D5 - Idéntico al Audio 2 adjunto
+            },
+
+            // FILA 2 (Media - 3 cilindros)
+            {
+                id: 3,
+                name: "Cilindro 3 · Tintineo Mi (E5)",
+                row: 2,
+                x: 500,
+                y: 678,
+                defaultAudioFiles: ["Audio-3.wav", "Audio-3.mp3", "Sonido-3.wav", "Sonido-3.mp3", "3.wav", "3.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 659.25 // E5 - Idéntico al Audio 3 adjunto
+            },
+            {
+                id: 4,
+                name: "Cilindro 4 · Tintineo Fa (F5)",
+                row: 2,
+                x: 990,
+                y: 678,
+                defaultAudioFiles: ["Audio-4.wav", "Audio-4.mp3", "Sonido-4.wav", "Sonido-4.mp3", "4.wav", "4.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 698.46 // F5 - Idéntico al Audio 4 adjunto
+            },
+            {
+                id: 5,
+                name: "Cilindro 5 · Tintineo Sol (G5)",
+                row: 2,
+                x: 1480,
+                y: 678,
+                defaultAudioFiles: ["Audio-5.wav", "Audio-5.mp3", "Sonido-5.wav", "Sonido-5.mp3", "5.wav", "5.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 783.99 // G5 - Idéntico al Audio 5 adjunto
+            },
+
+            // FILA 3 (Inferior - 3 cilindros)
+            {
+                id: 6,
+                name: "Cilindro 6 · Tintineo La (A5)",
+                row: 3,
+                x: 500,
+                y: 1078,
+                defaultAudioFiles: ["Audio-6.wav", "Audio-6.mp3", "Sonido-6.wav", "Sonido-6.mp3", "6.wav", "6.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 880.00 // A5 - Idéntico al Audio 6 adjunto
+            },
+            {
+                id: 7,
+                name: "Cilindro 7 · Tintineo Si (B5)",
+                row: 3,
+                x: 990,
+                y: 1078,
+                defaultAudioFiles: ["Audio-7.wav", "Audio-7.mp3", "Sonido-7.wav", "Sonido-7.mp3", "7.wav", "7.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 987.77 // B5 - Idéntico al Audio 7 adjunto
+            },
+            {
+                id: 8,
+                name: "Cilindro 8 · Tintineo Do Agudo (C6)",
+                row: 3,
+                x: 1480,
+                y: 1078,
+                defaultAudioFiles: ["Audio-8.wav", "Audio-8.mp3", "Sonido-8.wav", "Sonido-8.mp3", "8.wav", "8.mp3"],
+                customImage: null,
+                customAudioBuffer: null,
+                customAudioName: null,
+                bellFreq: 1046.50 // C6 - Idéntico al Audio 8 adjunto
+            }
+        ];
+
+        // Alturas/anchos base de las 15 barras horizontales del ecualizador ovalado dentro del cilindro blanco inferior
+        const EQ_BASE_WIDTHS = [46, 62, 74, 82, 88, 92, 95, 96, 95, 92, 88, 82, 74, 62, 46];
+
+        // Estado global de la aplicación
+        let audioCtx = null;
+        let currentActiveNodes = [];
+        let activeSoundTimer = null;
+        let activeProgressRAF = null;
+        let currentPlayingId = null;
+        let lastPlayedId = 1;
+        let soundStartTime = 0;
+
+        // Estado de escalado de pantalla
+        let scaleToFit = true;
+
+        // Estado del modo de juego ("free" o "quiz")
+        let gameMode = "free";
+        let quizTargetId = null;
+        let quizScore = 0;
+
+        /*************************************************************************
+         * DETECCIÓN AUTOMÁTICA DE ARCHIVOS LOCALES (`Cilindro-1.png`, `Botón-play-audio.png` y Audios)
+         *************************************************************************/
+        function tryProbeLocalCylinderImage() {
+            const probeImg = new Image();
+            probeImg.onload = () => {
+                sharedCylinderImgUrl = "Cilindro-1.png";
+                sharedCylinderImgLoaded = true;
+                const statusEl = document.getElementById('status-cilindro-img');
+                if (statusEl) statusEl.textContent = "Cilindro-1.png activo";
+                renderCylinders();
+            };
+            probeImg.onerror = () => {
+                // Mantiene el renderizado 3D dorado idéntico hasta que el usuario arrastre o suba Cilindro-1.png
+            };
+            probeImg.src = "Cilindro-1.png";
+        }
+
+        function handleSpeakerImgLoaded() {
+            const customImg = document.getElementById('custom-speaker-img');
+            const fallbackSvg = document.getElementById('fallback-speaker-svg');
+            customImg.classList.remove('hidden');
+            fallbackSvg.classList.add('hidden');
+            const statusEl = document.getElementById('status-speaker-img');
+            if (statusEl) statusEl.textContent = "Botón-play-audio.png activo";
+        }
+
+        function tryAlternativeSpeakerImg(imgEl) {
+            if (!imgEl.dataset.triedNfd) {
+                imgEl.dataset.triedNfd = "true";
+                // Probar con tilde descompuesta NFD (como en macOS: Boto\u0301n-play-audio.png)
+                imgEl.src = "Boto\u0301n-play-audio.png";
+            } else {
+                imgEl.classList.add('hidden');
+                document.getElementById('fallback-speaker-svg').classList.remove('hidden');
+            }
+        }
+
+        // Intentar precargar automáticamente Audio-1.wav / Audio-1.mp3 si están en la misma carpeta local
+        async function tryProbeLocalAudios() {
+            for (const cyl of CYLINDERS_DATA) {
+                for (const candidateName of cyl.defaultAudioFiles) {
+                    try {
+                        const resp = await fetch(candidateName, { method: 'GET' });
+                        if (resp.ok) {
+                            const contentType = resp.headers.get('content-type') || '';
+                            if (contentType.includes('audio') || contentType.includes('octet-stream')) {
+                                const buf = await resp.arrayBuffer();
+                                ensureAudioContext();
+                                const decoded = await audioCtx.decodeAudioData(buf);
+                                cyl.customAudioBuffer = decoded;
+                                cyl.customAudioName = candidateName;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        // Continúa silenciosamente y usa el tono exacto de campana de 4.0s
+                    }
+                }
+            }
+        }
+
+        /*************************************************************************
+         * ESCALADO RESPONSIVO DEL LIENZO 1980x1920
+         *************************************************************************/
+        function updateStageScale() {
+            const stage = document.getElementById('stage-wrapper');
+            if (!scaleToFit) {
+                document.body.classList.add('native-scroll');
+                stage.style.transform = 'none';
+                return;
+            }
+            document.body.classList.remove('native-scroll');
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const scaleX = vw / 1980;
+            const scaleY = vh / 1920;
+            const scale = Math.min(scaleX, scaleY) * 0.985;
+            stage.style.transform = `scale(${scale})`;
+        }
+
+        function toggleScaleMode() {
+            scaleToFit = !scaleToFit;
+            const btn = document.getElementById('btn-scale-toggle');
+            btn.textContent = scaleToFit ? "📐 Vista: Ajustada" : "🔍 Vista: 1980×1920 Real";
+            updateStageScale();
+        }
+
+        function toggleHudVisibility() {
+            const topHud = document.getElementById('top-hud');
+            const restoreBtn = document.getElementById('btn-restore-hud');
+            const isHidden = topHud.classList.contains('hidden');
+            if (isHidden) {
+                topHud.classList.remove('hidden');
+                restoreBtn.classList.add('hidden');
+            } else {
+                topHud.classList.add('hidden');
+                restoreBtn.classList.remove('hidden');
+            }
+        }
+
+        /*************************************************************************
+         * RENDERIZADO DE LOS 8 CILINDROS DORADOS (`Cilindro-1.png` o Vector HD)
+         *************************************************************************/
+        function renderCylinders() {
+            const container = document.getElementById('cylinders-container');
+            container.innerHTML = '';
+
+            CYLINDERS_DATA.forEach((cyl) => {
+                const wrapper = document.createElement('div');
+                wrapper.id = `cylinder-btn-${cyl.id}`;
+                wrapper.className = 'cylinder-item absolute pointer-events-auto select-none flex flex-col items-center';
+                wrapper.style.width = '380px';
+                wrapper.style.height = '415px';
+                wrapper.style.left = `${cyl.x - 190}px`;
+                wrapper.style.top = `${cyl.y}px`;
+                wrapper.setAttribute('role', 'button');
+                wrapper.setAttribute('tabindex', '0');
+                wrapper.setAttribute('aria-label', `${cyl.name} - Sonido de 4 segundos`);
+
+                const imgSrc = cyl.customImage || sharedCylinderImgUrl;
+
+                if (imgSrc) {
+                    wrapper.innerHTML = `
+                        <img src="${imgSrc}" alt="${cyl.name}" class="w-full h-full object-contain pointer-events-none select-none" />
+                    `;
+                } else {
+                    wrapper.innerHTML = `
+                        <svg viewBox="0 0 380 415" class="w-full h-full overflow-visible pointer-events-none">
+                            <use href="#golden-cylinder-ornament" />
+                        </svg>
+                    `;
+                }
+
+                // Etiqueta discreta con número del cilindro
+                const badge = document.createElement('div');
+                badge.className = 'mt-[-8px] px-4 py-0.5 rounded-full bg-purple-950/75 border border-amber-300/50 text-amber-200 font-bold text-lg opacity-0 hover:opacity-100 transition-opacity pointer-events-none';
+                badge.textContent = `#${cyl.id}`;
+                wrapper.appendChild(badge);
+
+                wrapper.addEventListener('click', () => handleCylinderClick(cyl.id));
+                wrapper.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCylinderClick(cyl.id);
+                    }
+                });
+
+                container.appendChild(wrapper);
+            });
+        }
+
+        function renderEqualizerBars() {
+            const eqContainer = document.getElementById('equalizer-bars');
+            eqContainer.innerHTML = '';
+            EQ_BASE_WIDTHS.forEach((w, idx) => {
+                const bar = document.createElement('div');
+                bar.id = `eq-bar-${idx}`;
+                bar.className = 'eq-bar h-[5.5px] rounded-full bg-[#7145D6]';
+                bar.style.width = `${w}%`;
+                eqContainer.appendChild(bar);
+            });
+        }
+
+        /*************************************************************************
+         * MOTOR DE AUDIO DE 4.0 SEGUNDOS EXACTOS
+         * Reproduce el archivo WAV/MP3 subido o sintetiza exactamente el timbre de campana
+         * tubular metálica de 4.0 segundos de los 8 archivos compartidos.
+         *************************************************************************/
+        function ensureAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function stopAllSounds() {
+            if (activeSoundTimer) {
+                clearTimeout(activeSoundTimer);
+                activeSoundTimer = null;
+            }
+            if (activeProgressRAF) {
+                cancelAnimationFrame(activeProgressRAF);
+                activeProgressRAF = null;
+            }
+            currentActiveNodes.forEach(node => {
+                try {
+                    if (node.stop) node.stop();
+                    if (node.disconnect) node.disconnect();
+                } catch (e) {}
+            });
+            currentActiveNodes = [];
+
+            document.querySelectorAll('.cylinder-item').forEach(el => {
+                el.classList.remove('playing');
+            });
+
+            const speakerWrapper = document.getElementById('bottom-speaker-wrapper');
+            speakerWrapper.classList.remove('speaker-active');
+            document.getElementById('speaker-progress-bar').style.width = '0%';
+
+            EQ_BASE_WIDTHS.forEach((w, idx) => {
+                const bar = document.getElementById(`eq-bar-${idx}`);
+                if (bar) {
+                    bar.style.width = `${w}%`;
+                    bar.style.backgroundColor = '#7145D6';
+                    bar.style.boxShadow = 'none';
+                }
+            });
+
+            currentPlayingId = null;
+        }
+
+        // Sintetiza exactamente la campana resonante de 4.0 segundos de los archivos WAV adjuntos
+        function playSynthesized4sBell(freq) {
+            const now = audioCtx.currentTime;
+            const masterGain = audioCtx.createGain();
+            masterGain.connect(audioCtx.destination);
+
+            // Ataque cristalino inmediato y caída larga exponencial de 4.0 segundos exactos
+            masterGain.gain.setValueAtTime(0.0001, now);
+            masterGain.gain.linearRampToValueAtTime(0.9, now + 0.012);
+            masterGain.gain.exponentialRampToValueAtTime(0.0008, now + SOUND_DURATION);
+
+            // Armónicos propios de campana/cilindro metálico afinado (como los 8 WAV compartidos)
+            const partials = [
+                { ratio: 1.0,    amp: 0.55, decay: 4.0 },
+                { ratio: 2.0,    amp: 0.25, decay: 3.1 },
+                { ratio: 2.756,  amp: 0.14, decay: 2.2 },
+                { ratio: 4.0,    amp: 0.09, decay: 1.5 },
+                { ratio: 5.404,  amp: 0.05, decay: 0.9 }
+            ];
+
+            partials.forEach((p) => {
+                const osc = audioCtx.createOscillator();
+                const pGain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * p.ratio, now);
+
+                pGain.gain.setValueAtTime(p.amp, now);
+                pGain.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
+
+                osc.connect(pGain);
+                pGain.connect(masterGain);
+
+                osc.start(now);
+                osc.stop(now + SOUND_DURATION);
+                currentActiveNodes.push(osc);
+            });
+        }
+
+        function playCylinderSound(id, animateCylinder = true) {
+            ensureAudioContext();
+            stopAllSounds();
+
+            const cyl = CYLINDERS_DATA.find(c => c.id === id);
+            if (!cyl) return;
+
+            currentPlayingId = id;
+            lastPlayedId = id;
+            soundStartTime = performance.now();
+
+            if (animateCylinder) {
+                const cylEl = document.getElementById(`cylinder-btn-${id}`);
+                if (cylEl) {
+                    cylEl.classList.add('playing');
+                    spawnGoldParticles(cyl.x, cyl.y + 210, 38);
+                }
+            }
+
+            // Activar animación en el botón inferior Botón-play-audio.png
+            const speakerWrapper = document.getElementById('bottom-speaker-wrapper');
+            speakerWrapper.classList.add('speaker-active');
+
+            const banner = document.getElementById('now-playing-banner');
+            const bannerName = document.getElementById('now-playing-name');
+            banner.style.opacity = '1';
+            bannerName.textContent = animateCylinder
+                ? `🔔 ${cyl.name}`
+                : `🎯 ¡Escucha el tintineo (4s) y toca el cilindro correcto!`;
+
+            // Si el cilindro tiene el archivo WAV/MP3 cargado, reproducirlo durante 4.0s
+            if (cyl.customAudioBuffer) {
+                const source = audioCtx.createBufferSource();
+                const gainNode = audioCtx.createGain();
+                source.buffer = cyl.customAudioBuffer;
+
+                const now = audioCtx.currentTime;
+                gainNode.gain.setValueAtTime(1.0, now);
+                gainNode.gain.setValueAtTime(1.0, now + Math.max(0.1, SOUND_DURATION - 0.15));
+                gainNode.gain.linearRampToValueAtTime(0.0001, now + SOUND_DURATION);
+
+                source.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                source.start(0, 0, SOUND_DURATION);
+                currentActiveNodes.push(source);
+            } else {
+                // Reproducir la campana de 4.0s con la frecuencia exacta del archivo compartido
+                playSynthesized4sBell(cyl.bellFreq);
+            }
+
+            function updateEqualizerAndTimer(nowPerf) {
+                const elapsed = (nowPerf - soundStartTime) / 1000;
+                if (elapsed >= SOUND_DURATION) return;
+
+                const remaining = Math.max(0, SOUND_DURATION - elapsed);
+                document.getElementById('now-playing-timer').textContent = `${remaining.toFixed(1)}s`;
+                document.getElementById('speaker-progress-bar').style.width = `${(elapsed / SOUND_DURATION) * 100}%`;
+
+                // Envolvente visual decreciente como la onda del tintineo
+                const env = Math.max(0.15, 1 - (elapsed / SOUND_DURATION) * 0.75);
+                EQ_BASE_WIDTHS.forEach((baseW, i) => {
+                    const bar = document.getElementById(`eq-bar-${i}`);
+                    if (bar) {
+                        const wave = Math.sin(elapsed * 22 + i * 0.7) * 0.32 * env;
+                        const dynamicW = Math.min(100, Math.max(24, baseW * (0.82 + Math.abs(wave))));
+                        bar.style.width = `${dynamicW}%`;
+                        if (Math.abs(wave) > 0.18) {
+                            bar.style.backgroundColor = '#F59E0B';
+                            bar.style.boxShadow = '0 0 8px rgba(245, 158, 11, 0.65)';
+                        } else {
+                            bar.style.backgroundColor = '#7145D6';
+                            bar.style.boxShadow = 'none';
+                        }
+                    }
+                });
+
+                activeProgressRAF = requestAnimationFrame(updateEqualizerAndTimer);
+            }
+
+            activeProgressRAF = requestAnimationFrame(updateEqualizerAndTimer);
+
+            activeSoundTimer = setTimeout(() => {
+                stopAllSounds();
+                document.getElementById('now-playing-timer').textContent = `4.0s`;
+                setTimeout(() => {
+                    if (!currentPlayingId) {
+                        document.getElementById('now-playing-banner').style.opacity = '0';
+                    }
+                }, 500);
+            }, SOUND_DURATION * 1000);
+        }
+
+        /*************************************************************************
+         * LÓGICA DE JUEGO E INTERACCIÓN
+         *************************************************************************/
+        function handleCylinderClick(id) {
+            if (gameMode === 'free') {
+                playCylinderSound(id, true);
+                return;
+            }
+
+            if (gameMode === 'quiz') {
+                if (!quizTargetId) {
+                    startNewQuizRound();
+                    return;
+                }
+
+                const clickedEl = document.getElementById(`cylinder-btn-${id}`);
+                if (id === quizTargetId) {
+                    quizScore += 100;
+                    document.getElementById('quiz-score').textContent = quizScore;
+                    document.getElementById('quiz-prompt').innerHTML = `✨ <span class="text-green-300 font-extrabold">¡Excelente! Acertaste el Cilindro #${id}</span>`;
+                    clickedEl.classList.add('correct-hit');
+                    playCylinderSound(id, true);
+                    spawnCelebrationConfetti();
+
+                    setTimeout(() => {
+                        clickedEl.classList.remove('correct-hit');
+                        if (gameMode === 'quiz') {
+                            startNewQuizRound();
+                        }
+                    }, 4250);
+                } else {
+                    clickedEl.classList.add('wrong-hit');
+                    document.getElementById('quiz-prompt').innerHTML = `❌ <span class="text-red-300">Tocaste el #${id}. Toca el botón blanco abajo para comparar.</span>`;
+                    playCylinderSound(id, true);
+                    setTimeout(() => {
+                        clickedEl.classList.remove('wrong-hit');
+                    }, 600);
+                }
+            }
+        }
+
+        function handleBottomSpeakerClick() {
+            if (gameMode === 'quiz') {
+                playQuizTargetSound();
+            } else {
+                // Reproduce el último cilindro seleccionado o uno aleatorio si es la primera vez
+                playCylinderSound(lastPlayedId || 1, true);
+            }
+        }
+
+        function setGameMode(mode) {
+            gameMode = mode;
+            stopAllSounds();
+
+            const btnFree = document.getElementById('btn-mode-free');
+            const btnQuiz = document.getElementById('btn-mode-quiz');
+            const quizHud = document.getElementById('quiz-hud');
+
+            if (mode === 'free') {
+                btnFree.className = 'px-6 py-3 rounded-full text-xl font-bold transition-all bg-white text-purple-900 shadow-md';
+                btnQuiz.className = 'px-6 py-3 rounded-full text-xl font-bold transition-all text-white hover:bg-white/15';
+                quizHud.classList.add('hidden');
+                quizHud.classList.remove('flex');
+                quizTargetId = null;
+            } else {
+                btnQuiz.className = 'px-6 py-3 rounded-full text-xl font-bold transition-all bg-amber-400 text-purple-950 shadow-md';
+                btnFree.className = 'px-6 py-3 rounded-full text-xl font-bold transition-all text-white hover:bg-white/15';
+                quizHud.classList.remove('hidden');
+                quizHud.classList.add('flex');
+                startNewQuizRound();
+            }
+        }
+
+        function startNewQuizRound() {
+            const randomIndex = Math.floor(Math.random() * CYLINDERS_DATA.length);
+            quizTargetId = CYLINDERS_DATA[randomIndex].id;
+            document.getElementById('quiz-prompt').textContent = '👂 Escuchando tintineo misterioso (4s)... ¿Qué cilindro es?';
+            playQuizTargetSound();
+        }
+
+        function playQuizTargetSound() {
+            if (!quizTargetId) {
+                startNewQuizRound();
+                return;
+            }
+            playCylinderSound(quizTargetId, false);
+        }
+
+        /*************************************************************************
+         * SISTEMA DE PARTÍCULAS DORADAS EN EL LIENZO 1980x1920
+         *************************************************************************/
+        const pCanvas = document.getElementById('particles-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        let particles = [];
+
+        function spawnGoldParticles(x, y, count = 32) {
+            const colors = ['#FFF9C4', '#FCE47C', '#F59E0B', '#FFFFFF', '#EAB308'];
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2.5 + Math.random() * 9.5;
+                particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 2.5,
+                    size: 5 + Math.random() * 9,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: 0.015 + Math.random() * 0.018,
+                    gravity: 0.18,
+                    rotation: Math.random() * Math.PI * 2,
+                    vRot: (Math.random() - 0.5) * 0.2
+                });
+            }
+        }
+
+        function spawnCelebrationConfetti() {
+            for (let i = 0; i < 95; i++) {
+                spawnGoldParticles(
+                    350 + Math.random() * 1280,
+                    250 + Math.random() * 900,
+                    2
+                );
+            }
+        }
+
+        function animateParticles() {
+            pCtx.clearRect(0, 0, 1980, 1920);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity;
+                p.alpha -= p.decay;
+                p.rotation += p.vRot;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                pCtx.save();
+                pCtx.globalAlpha = p.alpha;
+                pCtx.translate(p.x, p.y);
+                pCtx.rotate(p.rotation);
+                pCtx.fillStyle = p.color;
+
+                pCtx.beginPath();
+                const s = p.size;
+                pCtx.moveTo(0, -s);
+                pCtx.quadraticCurveTo(0, 0, s, 0);
+                pCtx.quadraticCurveTo(0, 0, 0, s);
+                pCtx.quadraticCurveTo(0, 0, -s, 0);
+                pCtx.quadraticCurveTo(0, 0, 0, -s);
+                pCtx.fill();
+                pCtx.restore();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        /*************************************************************************
+         * CARGA EN LOTE INTELIGENTE (DRAG & DROP Y SELECTOR MÚLTIPLE)
+         * Asigna automáticamente Cilindro-1.png, Botón-play-audio.png, Referencia.jpg
+         * y los 8 archivos de audio.
+         *************************************************************************/
+        async function processBatchFiles(fileList) {
+            if (!fileList || fileList.length === 0) return;
+            ensureAudioContext();
+
+            const audioFiles = [];
+            const imageFiles = [];
+
+            Array.from(fileList).forEach(file => {
+                if (file.type.startsWith('audio/') || /\.(wav|mp3|ogg|m4a)$/i.test(file.name)) {
+                    audioFiles.push(file);
+                } else if (file.type.startsWith('image/') || /\.(png|jpg|jpeg|webp)$/i.test(file.name)) {
+                    imageFiles.push(file);
+                }
+            });
+
+            // 1. Procesar imágenes según su nombre
+            imageFiles.forEach(imgFile => {
+                const normalizedName = imgFile.name.normalize('NFC').toLowerCase();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataUrl = e.target.result;
+                    if (normalizedName.includes('boton') || normalizedName.includes('botón') || normalizedName.includes('play')) {
+                        const speakerImg = document.getElementById('custom-speaker-img');
+                        speakerImg.src = dataUrl;
+                        handleSpeakerImgLoaded();
+                    } else if (normalizedName.includes('referencia') || normalizedName.includes('fondo')) {
+                        applyCustomBackgroundDataUrl(dataUrl);
+                    } else {
+                        // Por defecto o si se llama Cilindro-1.png, se aplica a los 8 cilindros dorados
+                        sharedCylinderImgUrl = dataUrl;
+                        sharedCylinderImgLoaded = true;
+                        const statusEl = document.getElementById('status-cilindro-img');
+                        if (statusEl) statusEl.textContent = `${imgFile.name} activo`;
+                        renderCylinders();
+                    }
+                };
+                reader.readAsDataURL(imgFile);
+            });
+
+            // 2. Ordenar los archivos de audio por nombre/número y asignarlos a los cilindros 1..8
+            audioFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
+            let nextSequentialSlot = 0;
+            for (const audioFile of audioFiles) {
+                try {
+                    const arrayBuf = await audioFile.arrayBuffer();
+                    const decoded = await audioCtx.decodeAudioData(arrayBuf);
+
+                    // Buscar si el nombre incluye un número del 1 al 8 (ej. "Audio-3.wav")
+                    const matchNum = audioFile.name.match(/([1-8])(?!.*\d)/);
+                    let targetCyl = null;
+
+                    if (matchNum) {
+                        const num = parseInt(matchNum[1], 10);
+                        targetCyl = CYLINDERS_DATA.find(c => c.id === num && !c._assignedInBatch);
+                    }
+                    if (!targetCyl) {
+                        while (nextSequentialSlot < CYLINDERS_DATA.length && CYLINDERS_DATA[nextSequentialSlot]._assignedInBatch) {
+                            nextSequentialSlot++;
+                        }
+                        if (nextSequentialSlot < CYLINDERS_DATA.length) {
+                            targetCyl = CYLINDERS_DATA[nextSequentialSlot];
+                        }
+                    }
+
+                    if (targetCyl) {
+                        targetCyl.customAudioBuffer = decoded;
+                        targetCyl.customAudioName = audioFile.name;
+                        targetCyl._assignedInBatch = true;
+                    }
+                } catch (err) {
+                    console.error("Error decodificando audio:", audioFile.name, err);
+                }
+            }
+
+            CYLINDERS_DATA.forEach(c => delete c._assignedInBatch);
+            renderConfigSlots();
+
+            // Mostrar confirmación en el banner
+            const banner = document.getElementById('now-playing-banner');
+            const bannerName = document.getElementById('now-playing-name');
+            banner.style.opacity = '1';
+            bannerName.textContent = `✅ ¡Archivos cargados! (${audioFiles.length} audios, ${imageFiles.length} imágenes)`;
+            document.getElementById('now-playing-timer').textContent = 'Listo';
+        }
+
+        function handleBatchFilesUpload(event) {
+            processBatchFiles(event.target.files);
+        }
+
+        // Configurar Drag & Drop sobre todo el lienzo 1980x1920
+        function setupDragAndDrop() {
+            const stage = document.getElementById('stage-wrapper');
+            const overlay = document.getElementById('dropzone-overlay');
+            let dragCounter = 0;
+
+            window.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                dragCounter++;
+                overlay.classList.remove('hidden');
+            });
+
+            window.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            window.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dragCounter--;
+                if (dragCounter <= 0) {
+                    dragCounter = 0;
+                    overlay.classList.add('hidden');
+                }
+            });
+
+            window.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dragCounter = 0;
+                overlay.classList.add('hidden');
+                if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+                    processBatchFiles(e.dataTransfer.files);
+                }
+            });
+        }
+
+        /*************************************************************************
+         * CONTROLES INDIVIDUALES DEL MODAL DE CONFIGURACIÓN
+         *************************************************************************/
+        function toggleConfigModal(show) {
+            const modal = document.getElementById('config-modal');
+            if (show) {
+                renderConfigSlots();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderConfigSlots() {
+            const grid = document.getElementById('config-slots-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            CYLINDERS_DATA.forEach((cyl) => {
+                const card = document.createElement('div');
+                card.className = 'bg-purple-900/45 border border-purple-400/30 rounded-2xl p-4 flex flex-col justify-between gap-3';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-amber-300 font-extrabold text-xl">${cyl.name}</span>
+                            <p class="text-purple-200 text-sm">
+                                Audio (4.0s): <strong class="text-emerald-300">${cyl.customAudioName ? cyl.customAudioName : `Campana ${cyl.bellFreq} Hz (4.0s)`}</strong>
+                            </p>
+                        </div>
+                        <button onclick="playCylinderSound(${cyl.id}, true)" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition">
+                            ▶️ Probar 4s
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
+                        <label class="px-4 py-2 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-purple-950 font-bold text-sm cursor-pointer transition">
+                            🎵 Subir Audio #${cyl.id} (4s)
+                            <input type="file" accept="audio/*" class="hidden" onchange="handleCylinderAudioUpload(event, ${cyl.id})">
+                        </label>
+                        <label class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm cursor-pointer transition">
+                            🖼️ Imagen Individual
+                            <input type="file" accept="image/*" class="hidden" onchange="handleCylinderImageUpload(event, ${cyl.id})">
+                        </label>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleSharedCylinderImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                sharedCylinderImgUrl = e.target.result;
+                sharedCylinderImgLoaded = true;
+                document.getElementById('status-cilindro-img').textContent = file.name;
+                renderCylinders();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSpeakerImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const speakerImg = document.getElementById('custom-speaker-img');
+                speakerImg.src = e.target.result;
+                handleSpeakerImgLoaded();
+                document.getElementById('status-speaker-img').textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyCustomBackgroundDataUrl(dataUrl) {
+            const stage = document.getElementById('stage-wrapper');
+            stage.style.backgroundImage = `url('${dataUrl}')`;
+            document.getElementById('base-purple-rect').setAttribute('fill', 'transparent');
+        }
+
+        function handleBackgroundUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                applyCustomBackgroundDataUrl(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetCustomBackground() {
+            const stage = document.getElementById('stage-wrapper');
+            stage.style.backgroundImage = 'none';
+            document.getElementById('base-purple-rect').setAttribute('fill', '#7145D6');
+            document.getElementById('vector-background').style.opacity = '1';
+        }
+
+        function handleCylinderImageUpload(event, id) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const cyl = CYLINDERS_DATA.find(c => c.id === id);
+                if (cyl) {
+                    cyl.customImage = e.target.result;
+                    renderCylinders();
+                    renderConfigSlots();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleCylinderAudioUpload(event, id) {
+            const file = event.target.files[0];
+            if (!file) return;
+            ensureAudioContext();
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const arrayBuffer = e.target.result;
+                    const decodedBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                    const cyl = CYLINDERS_DATA.find(c => c.id === id);
+                    if (cyl) {
+                        cyl.customAudioBuffer = decodedBuffer;
+                        cyl.customAudioName = file.name;
+                        renderConfigSlots();
+                        playCylinderSound(id, true);
+                    }
+                } catch (err) {
+                    console.error("Error decodificando archivo de audio:", err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function resetAllCustomAssets() {
+            sharedCylinderImgUrl = null;
+            CYLINDERS_DATA.forEach(c => {
+                c.customImage = null;
+                c.customAudioBuffer = null;
+                c.customAudioName = null;
+            });
+            document.getElementById('custom-speaker-img').classList.add('hidden');
+            document.getElementById('fallback-speaker-svg').classList.remove('hidden');
+            renderCylinders();
+            renderConfigSlots();
+            tryProbeLocalCylinderImage();
+        }
+
+        // Inicialización al cargar la ventana
+        window.onload = function () {
+            renderCylinders();
+            renderEqualizerBars();
+            updateStageScale();
+            animateParticles();
+            setupDragAndDrop();
+            tryProbeLocalCylinderImage();
+            tryProbeLocalAudios();
+            window.addEventListener('resize', updateStageScale);
+        };
+    </script>
 </body>
 </html>
